@@ -3,61 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🎰 NEON CASINO X</title>
+<title>NEON CASINO X</title>
 
 <style>
 
 body{
     margin:0;
     font-family:Arial;
-    background: radial-gradient(circle at top,#2a2a2a,#000 70%);
+    background:radial-gradient(circle,#222,#000);
     overflow:hidden;
 }
-
-body::before{
-    content:"";
-    position:fixed;
-    width:100%;
-    height:100%;
-    background-image:
-        radial-gradient(white 1px, transparent 1px),
-        radial-gradient(gold 1px, transparent 1px);
-    background-size:60px 60px,120px 120px;
-    animation:sparkle 6s linear infinite;
-    opacity:0.12;
-    pointer-events:none;
-}
-
-@keyframes sparkle{
-    0%{transform:translateY(0);}
-    100%{transform:translateY(-60px);}
-}
-
-#topBar{
-    position:absolute;
-    top:10px;
-    left:50%;
-    transform:translateX(-50%);
-    color:white;
-    text-align:center;
-}
-
-#bestScore{color:gold;}
 
 .card{
     background:gold;
     color:black;
-    border:none;
-    border-radius:12px;
-    padding:12px;
-    margin:10px;
+    padding:10px;
+    margin:8px;
+    border-radius:10px;
+    text-align:center;
     font-weight:bold;
     cursor:pointer;
-    text-align:center;
-}
-
-.card:hover{
-    transform:scale(1.05);
 }
 
 .screen{display:none;}
@@ -79,265 +44,265 @@ body::before{
     border-radius:15px;
 }
 
-.coin{
-    font-size:80px;
-    color:gold;
+.coin{font-size:80px;color:gold;}
+
+.yellow{color:gold;}
+
+#moneyFX{
+    position:fixed;
+    top:20px;
+    right:20px;
+    color:white;
 }
+
+.fx{
+    animation:up 1s forwards;
+}
+
+@keyframes up{
+    0%{opacity:1;transform:translateY(0);}
+    100%{opacity:0;transform:translateY(-20px);}
+}
+
+.plus{color:lime;}
+.minus{color:red;}
 
 </style>
 </head>
 
 <body>
 
-<div id="topBar">
-    <div id="money">💰 1000</div>
-    <div id="bestScore">🏆 BEST: 0</div>
-</div>
+<div id="moneyFX"></div>
 
 <div id="center">
 
 <!-- WELCOME -->
 <div id="welcome" class="screen active">
-    <h1 style="color:gold;">🎰 NEON CASINO X</h1>
-    <div class="card" onclick="goMode()">START</div>
+<h1 style="color:gold;">NEON CASINO X</h1>
+<div class="card" onclick="goMode()">CHOOSE MODE</div>
 </div>
 
 <!-- MODE -->
 <div id="mode" class="screen">
-    <h2 style="color:gold;">MODE</h2>
-    <div class="card" onclick="openSlot()">🎰 SLOT</div>
-    <div class="card" onclick="openCoin()">🪙 COIN</div>
-    <div class="card" onclick="openBet()">💰 BET</div>
-    <div class="card" onclick="openShop()">🏪 SHOP</div>
-    <div class="card" onclick="openInventory()">🎒 INV</div>
-    <div class="card" onclick="openMini()">🎮 MINI</div>
-    <div class="card" onclick="goWelcome()">BACK</div>
+
+<div class="card" onclick="openSlot()">🎰 SLOT</div>
+<div class="card" onclick="openCoin()">🪙 COIN</div>
+<div class="card" onclick="openBet()">💰 BET</div>
+
+<div class="card yellow" onclick="openInventory()">🎒 INVENTORY</div>
+<div class="card yellow" onclick="openShop()">🏪 SHOP</div>
+<div class="card yellow" onclick="openMini()">🎮 MINI</div>
+
+<div class="card" onclick="goWelcome()">BACK</div>
+
 </div>
 
 <!-- SLOT -->
 <div id="slot" class="screen">
-    <h2>🎰 SLOT</h2>
-    <div class="slot-box" id="slotBox">❓❓❓</div>
-    <div class="card" onclick="spin()">SPIN (100)</div>
-    <div class="card" onclick="goMode()">BACK</div>
+<div class="slot-box" id="slotBox">❓❓❓</div>
+<div class="card" onclick="spin()">SPIN (100)</div>
+<div class="card" onclick="goMode()">BACK</div>
 </div>
 
 <!-- COIN -->
 <div id="coin" class="screen">
-    <h2>🪙 COIN</h2>
-    <div class="coin" id="coinFace">❓</div>
-    <div class="card" onclick="flip('HEAD')">HEAD</div>
-    <div class="card" onclick="flip('TAIL')">TAIL</div>
-    <div class="card" onclick="goMode()">BACK</div>
+<div class="coin" id="coinFace">❓</div>
+<div class="card" onclick="flip('HEAD')">HEAD</div>
+<div class="card" onclick="flip('TAIL')">TAIL</div>
+<div class="card" onclick="goMode()">BACK</div>
 </div>
 
 <!-- BET -->
 <div id="bet" class="screen">
-    <h2>💰 BET</h2>
-    <input id="betAmount" type="number">
-    <div class="card" onclick="playBet()">START</div>
-    <div class="card" onclick="goMode()">BACK</div>
+<input id="betAmount">
+<div class="card" onclick="playBet()">START</div>
+<div class="card" onclick="goMode()">BACK</div>
 </div>
 
 <!-- SHOP -->
 <div id="shop" class="screen">
-    <h2>🏪 SHOP</h2>
-
-    <div class="card" onclick="buy('slot')">🎰 슬롯 +3%</div>
-    <div class="card" onclick="buy('coin')">🪙 코인 +3%</div>
-    <div class="card" onclick="buy('bet')">💰 베팅 +3%</div>
-
-    <div class="card" onclick="goMode()">BACK</div>
+<div class="card">🎰 SLOT +3% / 2000</div>
+<div class="card">🪙 COIN +3% / 2000</div>
+<div class="card">💰 BET +3% / 2000</div>
+<div class="card" onclick="goMode()">BACK</div>
 </div>
 
 <!-- INVENTORY -->
 <div id="inventory" class="screen">
-    <h2>🎒 INVENTORY</h2>
-    <div id="invList"></div>
-    <div class="card" onclick="goMode()">BACK</div>
+<div id="invList"></div>
+<div class="card" onclick="goMode()">BACK</div>
 </div>
 
-<!-- MINI GAME -->
+<!-- MINI -->
 <div id="mini" class="screen">
-    <h2>🎮 MINI GAME</h2>
-    <h1 id="miniText">WAIT...</h1>
-    <div class="card" onclick="pressMini()">PRESS</div>
-    <div class="card" onclick="goMode()">BACK</div>
+<h1 id="miniText">WAIT...</h1>
+<div class="card" onclick="pressMini()">CLICK</div>
+<div class="card" onclick="goMode()">BACK</div>
 </div>
 
 </div>
 
 <script>
 
-let money = Number(localStorage.getItem("money")) || 1000;
-let best = Number(localStorage.getItem("best")) || 0;
+let money=1000;
+let best=0;
 
-let inventory = JSON.parse(localStorage.getItem("inv")) || [];
-let equipped = JSON.parse(localStorage.getItem("equip")) || {};
+let inventory=[];
+let equipped={};
 
 let canPress=false;
 
 /* SCREEN */
 function show(id){
-    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-    document.getElementById(id).classList.add("active");
+document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+document.getElementById(id).classList.add("active");
 }
 
 function goWelcome(){show("welcome");}
 function goMode(){show("mode");}
 
+/* MONEY FX */
+function fx(v){
+let box=document.getElementById("moneyFX");
+let d=document.createElement("div");
+d.className="fx "+(v>=0?"plus":"minus");
+d.innerText=(v>=0?"+":"")+v;
+box.appendChild(d);
+setTimeout(()=>d.remove(),1000);
+}
+
+/* MONEY SYSTEM */
+function add(v){money+=v;fx(v);update();}
+function sub(v){money-=v;fx(-v);update();}
+
 /* SLOT */
 function openSlot(){show("slot");}
 
 function spin(){
-    if(money<100) return;
-    money-=100;
+if(money<100) return;
+sub(100);
 
-    let bonus = equipped.slot ? 0.03 : 0;
+let bonus=e.quipped?.slot?0.03:0;
 
-    let box=document.getElementById("slotBox");
+let box=document.getElementById("slotBox");
+let arr=["🍒","🍋","🍇","💎","7️⃣"];
 
-    let symbols=["🍒","🍋","🍇","💎","7️⃣"];
+let anim=setInterval(()=>{
+box.innerText=arr[Math.random()*5|0]+" "+arr[Math.random()*5|0]+" "+arr[Math.random()*5|0];
+},80);
 
-    let anim=setInterval(()=>{
-        box.innerText =
-        symbols[Math.floor(Math.random()*5)]+" "+
-        symbols[Math.floor(Math.random()*5)]+" "+
-        symbols[Math.floor(Math.random()*5)];
-    },80);
+setTimeout(()=>{
+clearInterval(anim);
 
-    setTimeout(()=>{
-        clearInterval(anim);
+if(Math.random()<0.03+bonus) add(1000);
 
-        if(Math.random()<0.03+bonus){
-            money+=1000;
-        }
-
-        update();
-    },1500);
+},1500);
 }
 
 /* COIN */
 function openCoin(){show("coin");}
 
-function flip(choice){
-    if(money<50) return;
-    money-=50;
+function flip(c){
+if(money<50) return;
+sub(50);
 
-    let bonus = equipped.coin ? 0.03 : 0;
+let bonus=e.quipped?.coin?0.03:0;
 
-    let face=document.getElementById("coinFace");
+let face=document.getElementById("coinFace");
 
-    let anim=setInterval(()=>{
-        face.innerText=Math.random()<0.5?"HEAD":"TAIL";
-    },80);
+let anim=setInterval(()=>{
+face.innerText=Math.random()<0.5?"HEAD":"TAIL";
+},80);
 
-    setTimeout(()=>{
-        clearInterval(anim);
+setTimeout(()=>{
+clearInterval(anim);
 
-        let res = Math.random()<0.5+bonus?"HEAD":"TAIL";
-        face.innerText=res;
+let r=Math.random()<0.5+bonus?"HEAD":"TAIL";
+face.innerText=r;
 
-        if(choice===res) money+=100;
+if(c===r) add(100);
 
-        update();
-    },1200);
+},1200);
 }
 
 /* BET */
-function openBet(){show("bet");}
-
 function playBet(){
-    let bet=Number(document.getElementById("betAmount").value);
-    if(bet>money) return;
+let b=Number(betAmount.value);
+if(b>money) return;
 
-    money-=bet;
+sub(b);
 
-    let bonus = equipped.bet ? 0.03 : 0;
+let bonus=e.quipped?.bet?0.03:0;
 
-    setTimeout(()=>{
-        if(Math.random()<0.5+bonus){
-            money+=bet*2;
-        }
-        update();
-    },800);
-}
-
-/* SHOP */
-function openShop(){show("shop");}
-
-function buy(type){
-    if(money<2000) return;
-    money-=2000;
-    inventory.push(type);
-    update();
+setTimeout(()=>{
+if(Math.random()<0.5+bonus) add(b*2);
+},800);
 }
 
 /* INVENTORY */
 function openInventory(){
-    show("inventory");
+show("inventory");
 
-    let box=document.getElementById("invList");
-    box.innerHTML="";
+let box=document.getElementById("invList");
+box.innerHTML="";
 
-    inventory.forEach((i,idx)=>{
+inventory.forEach((i,idx)=>{
 
-        let name=i==="slot"?"🎰 슬롯 +3%":
-                i==="coin"?"🪙 코인 +3%":"💰 베팅 +3%";
+let d=document.createElement("div");
+d.className="card";
+d.innerText=i+" 장착";
 
-        let d=document.createElement("div");
-        d.className="card";
-        d.innerHTML=name+"<br>장착";
+d.onclick=()=>{
+equipped[i]=true;
+inventory.splice(idx,1);
+openInventory();
+};
 
-        d.onclick=()=>{
-            equipped[i]=true;
-            inventory.splice(idx,1);
-            update();
-            openInventory();
-        };
-
-        box.appendChild(d);
-    });
+box.appendChild(d);
+});
 }
 
-/* MINI GAME */
+/* MINI GAME (REWORK) */
 function openMini(){
-    show("mini");
-    startMini();
+show("mini");
+startMini();
 }
+
+let startTime=0;
 
 function startMini(){
-    canPress=false;
-    document.getElementById("miniText").innerText="WAIT...";
-
-    setTimeout(()=>{
-        document.getElementById("miniText").innerText="GO!";
-        canPress=true;
-    },Math.random()*2000+1000);
+canPress=false;
+miniText.innerText="WAIT...";
+setTimeout(()=>{
+miniText.innerText="CLICK!";
+startTime=Date.now();
+canPress=true;
+},Math.random()*2000+1000);
 }
 
 function pressMini(){
-    if(!canPress) return;
 
-    let bonus = equipped.mini ? 50 : 0;
-    money += 100 + bonus;
+if(!canPress) return;
 
-    update();
-    startMini();
+let t=(Date.now()-startTime)/1000;
+
+if(t<0){
+alert("실격");
+return;
 }
 
-/* UPDATE + SAVE */
+if(t<=0.2) add(100);
+else if(t<=0.5) add(50);
+else add(0);
+
+startMini();
+}
+
+/* UPDATE */
 function update(){
-    document.getElementById("money").innerText="💰 "+money;
-
-    if(money>best) best=money;
-
-    document.getElementById("bestScore").innerText="🏆 "+best;
-
-    localStorage.setItem("money",money);
-    localStorage.setItem("best",best);
-    localStorage.setItem("inv",JSON.stringify(inventory));
-    localStorage.setItem("equip",JSON.stringify(equipped));
+best=Math.max(best,money);
+moneyEl.innerText="💰 "+money;
+bestScore.innerText="🏆 "+best;
 }
 
 update();
