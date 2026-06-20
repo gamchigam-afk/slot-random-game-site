@@ -4,18 +4,40 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>🎰 CASINO APP</title>
+<title>🎰 CASINO NEON</title>
 
 <style>
+/* 🌌 배경 */
 body{
     margin:0;
-    background: radial-gradient(circle at top,#1a1a1a,#000);
-    color:gold;
     font-family:Arial;
+    color:gold;
     display:flex;
     justify-content:center;
     align-items:center;
     min-height:100vh;
+    background: radial-gradient(circle at top,#2a2a2a,#000 70%);
+    overflow:hidden;
+}
+
+/* ✨ 반짝 배경 */
+body::before{
+    content:"";
+    position:fixed;
+    top:0;left:0;
+    width:100%;height:100%;
+    background-image:
+        radial-gradient(white 1px, transparent 1px),
+        radial-gradient(gold 1px, transparent 1px);
+    background-size:60px 60px,120px 120px;
+    animation:sparkle 6s linear infinite;
+    opacity:0.15;
+    pointer-events:none;
+}
+
+@keyframes sparkle{
+    0%{transform:translateY(0);}
+    100%{transform:translateY(-60px);}
 }
 
 #app{
@@ -30,6 +52,7 @@ body{
 #money{
     color:white;
     font-size:20px;
+    text-shadow:0 0 5px gold;
 }
 
 #bestScore{
@@ -40,50 +63,51 @@ body{
     color:gold;
 }
 
-/* 🎴 카드 UI */
+/* 🎴 카드 */
 .card{
-    background:#111;
-    border:2px solid gold;
-    border-radius:12px;
+    background:linear-gradient(145deg,#111,#1a1a1a);
+    border:1px solid gold;
+    border-radius:14px;
     padding:14px;
     margin:10px;
     cursor:pointer;
     transition:0.2s;
     color:gold;
+    box-shadow:0 0 8px rgba(255,215,0,0.2);
 }
 
 .card:hover{
-    transform:scale(1.05);
-    box-shadow:0 0 10px gold;
+    transform:scale(1.06);
+    box-shadow:0 0 18px gold;
 }
 
-#sideMenu{
-    position:absolute;
-    left:10px;
-    top:120px;
-    display:flex;
-    flex-direction:column;
-}
-
-.screen{display:none;}
-.active{display:block;}
-
+/* 슬롯 */
 .slot-box{
     font-size:60px;
     padding:20px;
-    border:3px solid gold;
-    background:#111;
     border-radius:15px;
+    background:#111;
+    border:2px solid gold;
+    box-shadow:0 0 15px gold;
 }
 
-.coin{font-size:80px;}
+/* 코인 */
+.coin{
+    font-size:80px;
+    text-shadow:0 0 10px gold;
+}
 
-input{
-    padding:10px;
-    border-radius:8px;
-    border:none;
-    text-align:center;
-    margin:5px;
+/* 화면 */
+.screen{display:none;}
+.active{display:block;}
+
+/* 메뉴 */
+#sideMenu{
+    position:absolute;
+    left:5px;
+    top:120px;
+    display:flex;
+    flex-direction:column;
 }
 </style>
 </head>
@@ -92,7 +116,7 @@ input{
 
 <div id="app">
 
-<div id="money">💰 1000원</div>
+<div id="money">💰 1000</div>
 <div id="bestScore">🏆 BEST: 0</div>
 
 <!-- 🔊 SOUND -->
@@ -104,14 +128,14 @@ input{
 <!-- 🏠 WELCOME -->
 <div id="welcome" class="screen active">
 
-    <h1>🎉 CASINO APP</h1>
+    <h1>🎰 CASINO NEON</h1>
 
     <div class="card" onclick="goMode()">🎮 GAME MODE</div>
 
     <div id="sideMenu">
         <div class="card" onclick="openMini()">🎮 MINI</div>
         <div class="card" onclick="showOdds()">📊 ODDS</div>
-        <div class="card" onclick="openInventory()">🎒 INVENTORY</div>
+        <div class="card" onclick="openInventory()">🎒 INV</div>
     </div>
 
 </div>
@@ -155,9 +179,9 @@ input{
 
 <!-- 💰 BET -->
 <div id="bet" class="screen">
-    <h2>💰 BET MODE</h2>
+    <h2>💰 BET</h2>
 
-    <input type="number" id="betAmount" placeholder="BET AMOUNT">
+    <input type="number" id="betAmount" placeholder="BET">
 
     <div class="card" onclick="playBet()">START</div>
     <div class="card" onclick="goMode()">BACK</div>
@@ -171,11 +195,9 @@ input{
 
     <h1 id="miniText">READY...</h1>
 
-    <div class="card" onclick="pressMini()" id="miniBtn">CLICK</div>
+    <div class="card" onclick="pressMini()">CLICK</div>
 
     <div class="card" onclick="goWelcome()">BACK</div>
-
-    <p id="miniResult"></p>
 </div>
 
 </div>
@@ -196,7 +218,6 @@ function play(id){
 
 function updateMoney(){
     document.getElementById("money").innerText="💰 "+money;
-    localStorage.setItem("money",money);
 
     if(money>best){
         best=money;
@@ -204,6 +225,7 @@ function updateMoney(){
     }
 
     document.getElementById("bestScore").innerText="🏆 BEST: "+best;
+    localStorage.setItem("money",money);
 }
 updateMoney();
 
@@ -213,13 +235,13 @@ function show(id){
     document.getElementById(id).classList.add("active");
 }
 
-function goWelcome(){ show("welcome"); }
-function goMode(){ show("mode"); }
+function goWelcome(){show("welcome");}
+function goMode(){show("mode");}
 
-function openSlot(){ show("slot"); }
-function openCoin(){ show("coin"); }
-function openBet(){ show("bet"); }
-function openMini(){ show("mini"); startMini(); }
+function openSlot(){show("slot");}
+function openCoin(){show("coin");}
+function openBet(){show("bet");}
+function openMini(){show("mini");startMini();}
 
 /* 🎰 SLOT */
 const items=["🍒","🍋","🍇","🔔","⭐","7️⃣"];
@@ -294,7 +316,7 @@ function playBet(){
 
     let bet=Number(document.getElementById("betAmount").value);
 
-    if(bet>money || bet<=0) return;
+    if(bet>money||bet<=0) return;
 
     money-=bet;
 
@@ -314,8 +336,6 @@ let startTime=0;
 
 function startMini(){
     canPress=false;
-
-    document.getElementById("miniText").innerText="READY...";
 
     setTimeout(()=>{
         canPress=true;
@@ -347,7 +367,7 @@ function showOdds(){
 }
 
 function openInventory(){
-    alert("🎒 INVENTORY READY SOON");
+    alert("🎒 READY");
 }
 
 </script>
