@@ -26,13 +26,12 @@ body{
     text-align:center;
 }
 
-/* 💰 돈 */
+/* 💰 UI */
 #money{
     color:white;
     font-size:20px;
 }
 
-/* 🏆 최고점수 */
 #bestScore{
     position:absolute;
     top:10px;
@@ -41,14 +40,23 @@ body{
     color:gold;
 }
 
-/* 🏪 상점 */
-#shopBtn{
-    position:absolute;
-    top:10px;
-    right:10px;
+/* 🎴 카드 UI */
+.card{
+    background:#111;
+    border:2px solid gold;
+    border-radius:12px;
+    padding:14px;
+    margin:10px;
+    cursor:pointer;
+    transition:0.2s;
+    color:gold;
 }
 
-/* 📋 좌측 메뉴 */
+.card:hover{
+    transform:scale(1.05);
+    box-shadow:0 0 10px gold;
+}
+
 #sideMenu{
     position:absolute;
     left:10px;
@@ -57,33 +65,25 @@ body{
     flex-direction:column;
 }
 
-/* 버튼 */
-button{
-    margin:5px;
-    padding:10px 12px;
-    border:none;
-    border-radius:8px;
-    background:gold;
-    font-weight:bold;
-    cursor:pointer;
-}
-
 .screen{display:none;}
 .active{display:block;}
 
-/* 슬롯 */
 .slot-box{
     font-size:60px;
     padding:20px;
-    border:4px solid gold;
+    border:3px solid gold;
     background:#111;
     border-radius:15px;
-    margin:20px 0;
 }
 
-/* 코인 */
-.coin{
-    font-size:80px;
+.coin{font-size:80px;}
+
+input{
+    padding:10px;
+    border-radius:8px;
+    border:none;
+    text-align:center;
+    margin:5px;
 }
 </style>
 </head>
@@ -95,20 +95,23 @@ button{
 <div id="money">💰 1000원</div>
 <div id="bestScore">🏆 BEST: 0</div>
 
-<button id="shopBtn">🏪 SHOP</button>
+<!-- 🔊 SOUND -->
+<audio id="clickSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9a3d5c.mp3"></audio>
+<audio id="winSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9a3d5c.mp3"></audio>
+<audio id="loseSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9a3d5c.mp3"></audio>
+<audio id="spinSound" src="https://cdn.pixabay.com/audio/2022/03/15/audio_115b9a3d5c.mp3"></audio>
 
 <!-- 🏠 WELCOME -->
 <div id="welcome" class="screen active">
 
     <h1>🎉 CASINO APP</h1>
 
-    <button onclick="goMode()">🎮 GAME MODE</button>
+    <div class="card" onclick="goMode()">🎮 GAME MODE</div>
 
-    <!-- 📋 좌측 메뉴 -->
     <div id="sideMenu">
-        <button onclick="openMini()">🎮 MINI</button>
-        <button onclick="showOdds()">📊 확률</button>
-        <button onclick="openInventory()">🎒 인벤토리</button>
+        <div class="card" onclick="openMini()">🎮 MINI</div>
+        <div class="card" onclick="showOdds()">📊 ODDS</div>
+        <div class="card" onclick="openInventory()">🎒 INVENTORY</div>
     </div>
 
 </div>
@@ -117,12 +120,11 @@ button{
 <div id="mode" class="screen">
     <h2>🎮 GAME MODE</h2>
 
-    <button onclick="openSlot()">🎰 SLOT</button>
-    <button onclick="openCoin()">🪙 COIN</button>
-    <button onclick="openBet()">💰 BET</button>
+    <div class="card" onclick="openSlot()">🎰 SLOT</div>
+    <div class="card" onclick="openCoin()">🪙 COIN</div>
+    <div class="card" onclick="openBet()">💰 BET</div>
 
-    <br>
-    <button onclick="goWelcome()">🚪 나가기</button>
+    <div class="card" onclick="goWelcome()">🚪 BACK</div>
 </div>
 
 <!-- 🎰 SLOT -->
@@ -131,8 +133,8 @@ button{
 
     <div class="slot-box" id="slotBox">❓ ❓ ❓</div>
 
-    <button onclick="spin()">SPIN (100)</button>
-    <button onclick="goMode()">🚪 나가기</button>
+    <div class="card" onclick="spin()">SPIN (100)</div>
+    <div class="card" onclick="goMode()">BACK</div>
 
     <p id="result"></p>
 </div>
@@ -143,11 +145,10 @@ button{
 
     <div class="coin" id="coinFace">❓</div>
 
-    <button onclick="flip('HEAD')">HEAD</button>
-    <button onclick="flip('TAIL')">TAIL</button>
+    <div class="card" onclick="flip('HEAD')">HEAD</div>
+    <div class="card" onclick="flip('TAIL')">TAIL</div>
 
-    <br>
-    <button onclick="goMode()">🚪 나가기</button>
+    <div class="card" onclick="goMode()">BACK</div>
 
     <p id="coinResult"></p>
 </div>
@@ -156,10 +157,10 @@ button{
 <div id="bet" class="screen">
     <h2>💰 BET MODE</h2>
 
-    <input type="number" id="betAmount" placeholder="베팅 금액">
+    <input type="number" id="betAmount" placeholder="BET AMOUNT">
 
-    <button onclick="playBet()">START</button>
-    <button onclick="goMode()">🚪 나가기</button>
+    <div class="card" onclick="playBet()">START</div>
+    <div class="card" onclick="goMode()">BACK</div>
 
     <p id="betResult"></p>
 </div>
@@ -170,10 +171,9 @@ button{
 
     <h1 id="miniText">READY...</h1>
 
-    <button onclick="pressMini()" id="miniBtn" disabled>CLICK</button>
+    <div class="card" onclick="pressMini()" id="miniBtn">CLICK</div>
 
-    <br>
-    <button onclick="goWelcome()">🚪 나가기</button>
+    <div class="card" onclick="goWelcome()">BACK</div>
 
     <p id="miniResult"></p>
 </div>
@@ -188,20 +188,24 @@ if(isNaN(money)) money = 1000;
 let best = Number(localStorage.getItem("best"));
 if(isNaN(best)) best = 0;
 
-const items=["🍒","🍋","🍇","🔔","⭐","7️⃣"];
+function play(id){
+    let a=document.getElementById(id);
+    a.currentTime=0;
+    a.play();
+}
 
 function updateMoney(){
     document.getElementById("money").innerText="💰 "+money;
     localStorage.setItem("money",money);
 
-    if(money > best){
-        best = money;
+    if(money>best){
+        best=money;
         localStorage.setItem("best",best);
-        document.getElementById("bestScore").innerText="🏆 BEST: "+best;
     }
+
+    document.getElementById("bestScore").innerText="🏆 BEST: "+best;
 }
 updateMoney();
-document.getElementById("bestScore").innerText="🏆 BEST: "+best;
 
 /* 화면 */
 function show(id){
@@ -218,41 +222,48 @@ function openBet(){ show("bet"); }
 function openMini(){ show("mini"); startMini(); }
 
 /* 🎰 SLOT */
+const items=["🍒","🍋","🍇","🔔","⭐","7️⃣"];
+
 function spin(){
     if(money<100) return;
 
+    play("spinSound");
+
     money-=100;
-    updateMoney();
 
     let box=document.getElementById("slotBox");
 
     let anim=setInterval(()=>{
-        box.innerText=items[Math.floor(Math.random()*items.length)]+" "+items[Math.floor(Math.random()*items.length)]+" "+items[Math.floor(Math.random()*items.length)];
+        box.innerText=items[Math.floor(Math.random()*6)]+" "+items[Math.floor(Math.random()*6)]+" "+items[Math.floor(Math.random()*6)];
     },80);
 
     setTimeout(()=>{
         clearInterval(anim);
 
-        let a=items[Math.floor(Math.random()*items.length)];
-        let b=items[Math.floor(Math.random()*items.length)];
-        let c=items[Math.floor(Math.random()*items.length)];
+        let a=items[Math.floor(Math.random()*6)];
+        let b=items[Math.floor(Math.random()*6)];
+        let c=items[Math.floor(Math.random()*6)];
 
         box.innerText=`${a} ${b} ${c}`;
 
         if(a===b && b===c){
             money+=1000;
+            play("winSound");
+        }else{
+            play("loseSound");
         }
 
         updateMoney();
-    },2000);
+    },1500);
 }
 
 /* 🪙 COIN */
 function flip(choice){
     if(money<50) return;
 
+    play("clickSound");
+
     money-=50;
-    updateMoney();
 
     let face=document.getElementById("coinFace");
 
@@ -268,6 +279,9 @@ function flip(choice){
 
         if(choice===res){
             money+=100;
+            play("winSound");
+        }else{
+            play("loseSound");
         }
 
         updateMoney();
@@ -276,6 +290,8 @@ function flip(choice){
 
 /* 💰 BET */
 function playBet(){
+    play("clickSound");
+
     let bet=Number(document.getElementById("betAmount").value);
 
     if(bet>money || bet<=0) return;
@@ -284,6 +300,9 @@ function playBet(){
 
     if(Math.random()<0.5){
         money+=bet*2;
+        play("winSound");
+    }else{
+        play("loseSound");
     }
 
     updateMoney();
@@ -295,39 +314,40 @@ let startTime=0;
 
 function startMini(){
     canPress=false;
-    document.getElementById("miniBtn").disabled=true;
+
+    document.getElementById("miniText").innerText="READY...";
 
     setTimeout(()=>{
         canPress=true;
         startTime=Date.now();
-        document.getElementById("miniBtn").disabled=false;
         document.getElementById("miniText").innerText="🔥 GO!";
-    },1500);
+    },1200);
 }
 
 function pressMini(){
     if(!canPress) return;
 
     let t=Date.now()-startTime;
-
     canPress=false;
-    document.getElementById("miniBtn").disabled=true;
 
-    if(t<300) money+=100;
-    else if(t<600) money+=50;
+    if(t<300){
+        money+=100;
+        play("winSound");
+    }else{
+        play("loseSound");
+    }
 
     updateMoney();
     setTimeout(startMini,1500);
 }
 
-/* 확률 */
+/* ETC */
 function showOdds(){
-    alert("🎰 슬롯 / 🪙 코인 / 💰 베팅 / 🎮 미니게임");
+    alert("🎰 SLOT / 🪙 COIN / 💰 BET / 🎮 MINI");
 }
 
-/* 인벤토리 */
 function openInventory(){
-    alert("🎒 인벤토리 준비중");
+    alert("🎒 INVENTORY READY SOON");
 }
 
 </script>
