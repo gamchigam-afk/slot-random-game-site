@@ -1,13 +1,132 @@
 <!DOCTYPE html>
-<html>
+<html lang="ko">
 <head>
-<title>Slot Game</title>
+<meta charset="UTF-8">
+<title>🎰 슬롯 머신</title>
+
+<style>
+body{
+    background:#111;
+    color:white;
+    text-align:center;
+    font-family:Arial;
+}
+
+h1{
+    margin-top:30px;
+}
+
+#money{
+    font-size:30px;
+    margin:20px;
+}
+
+.slot{
+    display:inline-block;
+    width:100px;
+    height:100px;
+    line-height:100px;
+    font-size:50px;
+    border:3px solid white;
+    margin:10px;
+    background:#222;
+}
+
+button{
+    font-size:25px;
+    padding:15px 30px;
+    cursor:pointer;
+}
+
+#result{
+    font-size:30px;
+    margin-top:20px;
+}
+</style>
 </head>
+
 <body>
 
-<h1>🎰 SLOT GAME</h1>
+<h1>🎰 SLOT MACHINE 🎰</h1>
 
-<p>웹사이트 성공!</p>
+<div id="money">💰 10000</div>
+
+<div>
+    <div class="slot" id="s1">❓</div>
+    <div class="slot" id="s2">❓</div>
+    <div class="slot" id="s3">❓</div>
+</div>
+
+<br>
+
+<button onclick="spin()">SPIN</button>
+
+<div id="result"></div>
+
+<script>
+
+let money = 10000;
+
+const symbols = ["🍒","🍋","⭐","💎","7️⃣"];
+
+function updateMoney(){
+    document.getElementById("money").innerText =
+    "💰 " + money;
+}
+
+function spin(){
+
+    if(money < 100){
+        document.getElementById("result").innerText =
+        "돈이 부족합니다!";
+        return;
+    }
+
+    money -= 100;
+    updateMoney();
+
+    document.getElementById("result").innerText =
+    "돌리는 중...";
+
+    let a,b,c;
+
+    let interval = setInterval(()=>{
+
+        a = symbols[Math.floor(Math.random()*symbols.length)];
+        b = symbols[Math.floor(Math.random()*symbols.length)];
+        c = symbols[Math.floor(Math.random()*symbols.length)];
+
+        document.getElementById("s1").innerText = a;
+        document.getElementById("s2").innerText = b;
+        document.getElementById("s3").innerText = c;
+
+    },100);
+
+    setTimeout(()=>{
+
+        clearInterval(interval);
+
+        if(a===b && b===c){
+
+            let reward = 3000;
+
+            money += reward;
+
+            document.getElementById("result").innerText =
+            "🎉 JACKPOT! +" + reward;
+
+        }else{
+
+            document.getElementById("result").innerText =
+            "❌ FAIL";
+        }
+
+        updateMoney();
+
+    },2000);
+}
+
+</script>
 
 </body>
 </html>
