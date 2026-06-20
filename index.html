@@ -1,19 +1,23 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>🎰 슬롯 머신</title>
+<title>🎰 SLOT MACHINE</title>
 
 <style>
 body{
     background:#111;
     color:white;
     text-align:center;
-    font-family:Arial;
+    font-family:Arial,sans-serif;
+    overflow:hidden;
 }
 
 h1{
     margin-top:30px;
+    color:gold;
+    text-shadow:0 0 10px gold;
 }
 
 #money{
@@ -23,26 +27,44 @@ h1{
 
 .slot{
     display:inline-block;
-    width:100px;
-    height:100px;
-    line-height:100px;
-    font-size:50px;
+    width:110px;
+    height:110px;
+    line-height:110px;
+    font-size:55px;
     border:3px solid white;
+    border-radius:15px;
     margin:10px;
     background:#222;
+    box-shadow:0 0 15px rgba(255,255,255,0.3);
 }
 
 button{
     font-size:25px;
-    padding:15px 30px;
+    padding:15px 35px;
+    border:none;
+    border-radius:10px;
     cursor:pointer;
+    background:gold;
+    font-weight:bold;
+}
+
+button:hover{
+    transform:scale(1.05);
 }
 
 #result{
     font-size:30px;
     margin-top:20px;
+    min-height:40px;
+}
+
+.particle{
+    position:fixed;
+    font-size:30px;
+    pointer-events:none;
 }
 </style>
+
 </head>
 
 <body>
@@ -59,71 +81,175 @@ button{
 
 <br>
 
-<button onclick="spin()">SPIN</button>
+<button id="spinBtn" onclick="spin()">SPIN</button>
 
 <div id="result"></div>
 
 <script>
 
 let money = 10000;
+let spinning = false;
 
 const symbols = ["🍒","🍋","⭐","💎","7️⃣"];
+
+const s1 = document.getElementById("s1");
+const s2 = document.getElementById("s2");
+const s3 = document.getElementById("s3");
+const result = document.getElementById("result");
+const spinBtn = document.getElementById("spinBtn");
 
 function updateMoney(){
     document.getElementById("money").innerText =
     "💰 " + money;
 }
 
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function ding(freq){
+
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+
+    osc.connect(gain);
+    gain.connect(audioCtx.destination);
+
+    osc.frequency.value = freq;
+    osc.type = "sine";
+
+    gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        audioCtx.currentTime + 0.2
+    );
+
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.2);
+}
+
+function jackpotEffect(){
+
+    document.body.animate([
+        {transform:"translateX(-6px)"},
+        {transform:"translateX(6px)"},
+        {transform:"translateX(-6px)"},
+        {transform:"translateX(6px)"},
+        {transform:"translateX(0px)"}
+    ],{
+        duration:500
+    });
+
+    for(let i=0;i<40;i++){
+
+        const p = document.createElement("div");
+
+        p.className = "particle";
+        p.innerText = "🎉";
+
+        p.style.left = Math.random()*100 + "vw";
+        p.style.top = "-30px";
+
+        document.body.appendChild(p);
+
+        p.animate([
+            {transform:"translateY(0px) rotate(0deg)"},
+            {transform:"translateY(110vh) rotate(720deg)"}
+        ],{
+            duration:2000 + Math.random()*1000
+        });
+
+        setTimeout(()=>{
+            p.remove();
+        },3000);
+    }
+}
+
 function spin(){
 
+    if(spinning) return;
+
     if(money < 100){
-        document.getElementById("result").innerText =
-        "돈이 부족합니다!";
+
+        result.innerText =
+        "💸 돈이 부족합니다!";
+
         return;
     }
+
+    spinning = true;
+    spinBtn.disabled = true;
 
     money -= 100;
     updateMoney();
 
-    document.getElementById("result").innerText =
-    "돌리는 중...";
+    result.innerText =
+    "🎰 돌리는 중...";
 
-    let a,b,c;
+    let final1 =
+    symbols[Math.floor(Math.random()*symbols.length)];
 
-    let interval = setInterval(()=>{
+    let final2 =
+    symbols[Math.floor(Math.random()*symbols.length)];
 
-        a = symbols[Math.floor(Math.random()*symbols.length)];
-        b = symbols[Math.floor(Math.random()*symbols.length)];
-        c = symbols[Math.floor(Math.random()*symbols.length)];
+    let final3 =
+    symbols[Math.floor(Math.random()*symbols.length)];
 
-        document.getElementById("s1").innerText = a;
-        document.getElementById("s2").innerText = b;
-        document.getElementById("s3").innerText = c;
+    const rolling = setInterval(()=>{
+
+        s1.innerText =
+        symbols[Math.floor(Math.random()*symbols.length)];
+
+        s2.innerText =
+        symbols[Math.floor(Math.random()*symbols.length)];
+
+        s3.innerText =
+        symbols[Math.floor(Math.random()*symbols.length)];
 
     },100);
 
     setTimeout(()=>{
 
-        clearInterval(interval);
+        s1.innerText = final1;
+        ding(700);
 
-        if(a===b && b===c){
+    },2000);
 
-            let reward = 3000;
+    setTimeout(()=>{
 
-            money += reward;
+        s2.innerText = final2;
+        ding(900);
 
-            document.getElementById("result").innerText =
-            "🎉 JACKPOT! +" + reward;
+    },2500);
+
+    setTimeout(()=>{
+
+        clearInterval(rolling);
+
+        s3.innerText = final3;
+        ding(1200);
+
+        if(final1 === final2 &&
+           final2 === final3){
+
+            money += 3000;
+
+            result.innerText =
+            "🎉 JACKPOT! +3000";
+
+            jackpotEffect();
 
         }else{
 
-            document.getElementById("result").innerText =
+            result.innerText =
             "❌ FAIL";
+
         }
 
         updateMoney();
 
-    },2000);
+        spinning = false;
+        spinBtn.disabled = false;
+
+    },3000);
 }
 
 </script>
