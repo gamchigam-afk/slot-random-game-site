@@ -4,79 +4,68 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>🎰 Casino Game</title>
+<title>🎰 CASINO GAME</title>
 
 <style>
-body {
-    margin: 0;
-    background: radial-gradient(circle at top, #1a1a1a, #000);
-    color: gold;
-    font-family: Arial;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    text-align: center;
+body{
+    margin:0;
+    background: radial-gradient(circle at top,#1a1a1a,#000);
+    color:gold;
+    font-family:Arial;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    min-height:100vh;
+    text-align:center;
 }
 
-/* 전체 화면 박스 */
-#app {
-    width: 100%;
-    max-width: 500px;
-    padding: 20px;
+#app{
+    width:100%;
+    max-width:500px;
+    padding:20px;
 }
 
-/* 돈 */
-#money {
-    font-size: 22px;
-    margin-bottom: 10px;
-    color: white;
+button{
+    margin:6px;
+    padding:10px 14px;
+    border:none;
+    border-radius:8px;
+    background:gold;
+    font-weight:bold;
+    cursor:pointer;
 }
 
-/* 화면 */
-.screen {
-    display: none;
-}
+button:active{ transform:scale(0.97); }
 
-.active {
-    display: block;
-}
+.screen{ display:none; }
+.active{ display:block; }
 
-/* 버튼 */
-button {
-    margin: 6px;
-    padding: 10px 14px;
-    border: none;
-    border-radius: 8px;
-    background: gold;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-button:active {
-    transform: scale(0.97);
+#money{
+    color:white;
+    font-size:22px;
+    margin-bottom:10px;
 }
 
 /* 슬롯 */
-.slot-box {
-    font-size: 60px;
-    padding: 20px;
-    border: 4px solid gold;
-    border-radius: 15px;
-    background: #111;
-    margin: 20px 0;
+.slot-box{
+    font-size:60px;
+    padding:20px;
+    border:4px solid gold;
+    background:#111;
+    border-radius:15px;
+    margin:20px 0;
 }
 
 /* 팝업 */
-#popup {
-    display: none;
-    position: fixed;
-    top: 30%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: #111;
-    border: 3px solid gold;
-    padding: 20px;
+#popup{
+    display:none;
+    position:fixed;
+    top:30%;
+    left:50%;
+    transform:translateX(-50%);
+    background:#111;
+    border:3px solid gold;
+    padding:20px;
 }
 </style>
 </head>
@@ -106,6 +95,7 @@ button:active {
 
     <button onclick="openSlot()">🎰 SLOT</button>
     <button onclick="openCoin()">🪙 COIN FLIP</button>
+    <button onclick="openMini()">🎮 MINI GAME</button>
     <br>
     <button onclick="goWelcome()">🚪 나가기</button>
 </div>
@@ -136,6 +126,19 @@ button:active {
     <p id="coinResult"></p>
 </div>
 
+<!-- 🎮 MINI GAME -->
+<div id="mini" class="screen">
+    <h2>🎮 REACTION GAME</h2>
+
+    <h1 id="miniText">READY...</h1>
+
+    <button onclick="pressMini()" id="miniBtn" disabled>CLICK!</button>
+    <br>
+    <button onclick="goMode()">🚪 나가기</button>
+
+    <p id="miniResult"></p>
+</div>
+
 </div>
 
 <!-- 팝업 -->
@@ -145,105 +148,146 @@ button:active {
 </div>
 
 <script>
+
 let money = Number(localStorage.getItem("money"));
 if(isNaN(money)) money = 1000;
 
-const items = ["🍒","🍋","🍇","🔔","⭐","7️⃣"];
+const items=["🍒","🍋","🍇","🔔","⭐","7️⃣"];
 
 function updateMoney(){
-    document.getElementById("money").innerText = "💰 " + money + "원";
-    localStorage.setItem("money", money);
+    document.getElementById("money").innerText="💰 "+money+"원";
+    localStorage.setItem("money",money);
 }
 updateMoney();
 
 /* 화면 */
 function show(id){
-    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
     document.getElementById(id).classList.add("active");
 }
 
 function goWelcome(){ show("welcome"); }
 function goMode(){ show("mode"); }
 function openSlot(){ show("slot"); }
+function openCoin(){ show("coin"); }
+function openMini(){ show("mini"); startMini(); }
 
-/* 🎰 슬롯 */
+/* 🎰 SLOT */
 function spin(){
-    if(money < 100){
-        document.getElementById("result").innerText = "돈 부족";
+    if(money<100){
+        document.getElementById("result").innerText="돈 부족";
         return;
     }
 
-    money -= 100;
+    money-=100;
     updateMoney();
 
-    let box = document.getElementById("slotBox");
-    document.getElementById("result").innerText = "돌리는 중...";
+    let box=document.getElementById("slotBox");
+    document.getElementById("result").innerText="돌리는 중...";
 
-    let anim = setInterval(()=>{
-        let a = items[Math.floor(Math.random()*items.length)];
-        let b = items[Math.floor(Math.random()*items.length)];
-        let c = items[Math.floor(Math.random()*items.length)];
-        box.innerText = `${a} ${b} ${c}`;
-    }, 80);
+    let anim=setInterval(()=>{
+        let a=items[Math.floor(Math.random()*items.length)];
+        let b=items[Math.floor(Math.random()*items.length)];
+        let c=items[Math.floor(Math.random()*items.length)];
+        box.innerText=`${a} ${b} ${c}`;
+    },80);
 
     setTimeout(()=>{
         clearInterval(anim);
 
-        let a = items[Math.floor(Math.random()*items.length)];
-        let b = items[Math.floor(Math.random()*items.length)];
-        let c = items[Math.floor(Math.random()*items.length)];
+        let a=items[Math.floor(Math.random()*items.length)];
+        let b=items[Math.floor(Math.random()*items.length)];
+        let c=items[Math.floor(Math.random()*items.length)];
 
-        box.innerText = `${a} ${b} ${c}`;
+        box.innerText=`${a} ${b} ${c}`;
 
         if(a===b && b===c){
-            money += 1000;
-            document.getElementById("result").innerText = "🎉 JACKPOT";
-        } else {
-            document.getElementById("result").innerText = "😢 LOSE";
+            money+=1000;
+            document.getElementById("result").innerText="🎉 JACKPOT";
+        }else{
+            document.getElementById("result").innerText="😢 LOSE";
         }
 
         updateMoney();
-    }, 2000);
+    },2000);
 }
 
-/* 🪙 코인 */
-function openCoin(){
-    show("coin");
-}
-
+/* 🪙 COIN */
 function flip(choice){
-    if(money < 50){
-        document.getElementById("coinResult").innerText = "돈 부족";
+    if(money<50){
+        document.getElementById("coinResult").innerText="돈 부족";
         return;
     }
 
-    money -= 50;
+    money-=50;
     updateMoney();
 
-    let face = document.getElementById("coinFace");
-    let resultText = document.getElementById("coinResult");
+    let face=document.getElementById("coinFace");
+    document.getElementById("coinResult").innerText="던지는 중...";
 
-    resultText.innerText = "던지는 중...";
-
-    let anim = setInterval(()=>{
-        face.innerText = Math.random() < 0.5 ? "🪙 HEAD" : "🪙 TAIL";
-    }, 100);
+    let anim=setInterval(()=>{
+        face.innerText=Math.random()<0.5?"🪙 HEAD":"🪙 TAIL";
+    },100);
 
     setTimeout(()=>{
         clearInterval(anim);
 
-        let result = Math.random() < 0.5 ? "HEAD" : "TAIL";
-        face.innerText = result;
+        let result=Math.random()<0.5?"HEAD":"TAIL";
+        face.innerText=result;
 
-        if(choice === result){
-            money += 100;
-            resultText.innerText = "🎉 WIN +100";
-        } else {
-            resultText.innerText = "😢 LOSE";
+        if(choice===result){
+            money+=100;
+            document.getElementById("coinResult").innerText="🎉 WIN +100";
+        }else{
+            document.getElementById("coinResult").innerText="😢 LOSE";
         }
 
         updateMoney();
-    }, 1200);
+    },1200);
+}
+
+/* 🎮 MINI GAME */
+let canPress=false;
+let startTime=0;
+
+function startMini(){
+    canPress=false;
+    document.getElementById("miniText").innerText="READY...";
+    document.getElementById("miniBtn").disabled=true;
+    document.getElementById("miniResult").innerText="";
+
+    let delay=Math.random()*2500+1000;
+
+    setTimeout(()=>{
+        document.getElementById("miniText").innerText="🔥 GO!";
+        document.getElementById("miniBtn").disabled=false;
+        canPress=true;
+        startTime=Date.now();
+    },delay);
+}
+
+function pressMini(){
+    if(!canPress){
+        document.getElementById("miniResult").innerText="❌ 너무 빨랐음";
+        return;
+    }
+
+    let t=Date.now()-startTime;
+    canPress=false;
+    document.getElementById("miniBtn").disabled=true;
+
+    if(t<300){
+        money+=300;
+        document.getElementById("miniResult").innerText="🏆 GOD +300";
+    }else if(t<600){
+        money+=150;
+        document.getElementById("miniResult").innerText="🎉 GOOD +150";
+    }else{
+        document.getElementById("miniResult").innerText="😢 SLOW";
+    }
+
+    updateMoney();
+    setTimeout(startMini,1500);
 }
 
 /* 팝업 */
@@ -253,6 +297,7 @@ function openPopup(){
 function closePopup(){
     document.getElementById("popup").style.display="none";
 }
+
 </script>
 
 </body>
