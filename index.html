@@ -54,24 +54,32 @@ button{
     margin:20px 0;
 }
 
-/* 🪙 코인 애니메이션 */
-.coin {
-    font-size: 80px;
-    display: inline-block;
-    transition: transform 0.3s;
+/* 코인 애니메이션 */
+.coin{
+    font-size:80px;
+    display:inline-block;
+    transition:transform 0.3s;
 }
 
-.flip {
-    animation: flipAnim 0.3s infinite;
+.flip{
+    animation:flipAnim 0.3s infinite;
 }
 
-@keyframes flipAnim {
-    0%   { transform: rotateY(0deg); }
-    50%  { transform: rotateY(180deg); }
-    100% { transform: rotateY(360deg); }
+@keyframes flipAnim{
+    0%{transform:rotateY(0deg);}
+    50%{transform:rotateY(180deg);}
+    100%{transform:rotateY(360deg);}
 }
 
-/* 팝업 */
+/* BET */
+input{
+    padding:10px;
+    border-radius:6px;
+    border:none;
+    text-align:center;
+    margin:5px;
+}
+
 #popup{
     display:none;
     position:fixed;
@@ -110,6 +118,8 @@ button{
 
     <button onclick="openSlot()">🎰 SLOT</button>
     <button onclick="openCoin()">🪙 COIN FLIP</button>
+    <button onclick="openBet()">💰 BET MODE</button>
+
     <br>
     <button onclick="goWelcome()">🚪 나가기</button>
 </div>
@@ -142,25 +152,33 @@ button{
     <p id="coinResult"></p>
 </div>
 
-<!-- 🎮 MINI GAME -->
+<!-- 🎮 MINI -->
 <div id="mini" class="screen">
     <h2>🎮 REACTION GAME</h2>
 
     <h1 id="miniText">READY...</h1>
 
-    <button onclick="pressMini()" id="miniBtn" disabled>CLICK!</button>
+    <button onclick="pressMini()" id="miniBtn" disabled>CLICK</button>
     <br>
     <button onclick="goMode()">🚪 나가기</button>
 
     <p id="miniResult"></p>
 </div>
 
+<!-- 💰 BET -->
+<div id="bet" class="screen">
+    <h2>💰 BET MODE</h2>
+
+    <input type="number" id="betAmount" placeholder="베팅 금액">
+
+    <h3 id="betText">READY</h3>
+
+    <button onclick="playBet()">🎲 START</button>
+    <button onclick="goMode()">🚪 나가기</button>
+
+    <p id="betResult"></p>
 </div>
 
-<!-- 팝업 -->
-<div id="popup">
-    <h3>⏳ 준비중</h3>
-    <button onclick="closePopup()">나가기</button>
 </div>
 
 <script>
@@ -187,6 +205,7 @@ function goMode(){ show("mode"); }
 function openSlot(){ show("slot"); }
 function openCoin(){ show("coin"); }
 function openMini(){ show("mini"); startMini(); }
+function openBet(){ show("bet"); }
 
 /* 🎰 SLOT */
 function spin(){
@@ -228,7 +247,7 @@ function spin(){
     },2000);
 }
 
-/* 🪙 COIN (애니메이션 추가) */
+/* 🪙 COIN */
 function flip(choice){
     if(money<50){
         document.getElementById("coinResult").innerText="돈 부족";
@@ -239,11 +258,10 @@ function flip(choice){
     updateMoney();
 
     let face=document.getElementById("coinFace");
-    let resultText=document.getElementById("coinResult");
+    let res=document.getElementById("coinResult");
 
-    resultText.innerText="🪙 던지는 중...";
+    res.innerText="던지는 중...";
 
-    // 🔥 회전 모션 시작
     face.classList.add("flip");
 
     let anim=setInterval(()=>{
@@ -259,16 +277,16 @@ function flip(choice){
 
         if(choice===result){
             money+=100;
-            resultText.innerText="🎉 WIN +100";
+            res.innerText="🎉 WIN +100";
         }else{
-            resultText.innerText="😢 LOSE";
+            res.innerText="😢 LOSE";
         }
 
         updateMoney();
     },1500);
 }
 
-/* 🎮 MINI GAME (보상 최대 100) */
+/* 🎮 MINI (MAX 100) */
 let canPress=false;
 let startTime=0;
 
@@ -276,7 +294,6 @@ function startMini(){
     canPress=false;
     document.getElementById("miniText").innerText="READY...";
     document.getElementById("miniBtn").disabled=true;
-    document.getElementById("miniResult").innerText="";
 
     let delay=Math.random()*2500+1000;
 
@@ -290,7 +307,7 @@ function startMini(){
 
 function pressMini(){
     if(!canPress){
-        document.getElementById("miniResult").innerText="❌ 너무 빨랐음";
+        document.getElementById("miniResult").innerText="❌ too early";
         return;
     }
 
@@ -299,37 +316,55 @@ function pressMini(){
     document.getElementById("miniBtn").disabled=true;
 
     if(t<300){
-        money+=100;   // 🔥 최대 100으로 제한
-        document.getElementById("miniResult").innerText="🏆 PERFECT +100";
+        money+=100;
+        document.getElementById("miniResult").innerText="🏆 +100";
     }else if(t<600){
         money+=50;
-        document.getElementById("miniResult").innerText="🎉 GOOD +50";
+        document.getElementById("miniResult").innerText="🎉 +50";
     }else{
-        document.getElementById("miniResult").innerText="😢 SLOW";
+        document.getElementById("miniResult").innerText="😢 slow";
     }
 
     updateMoney();
     setTimeout(startMini,1500);
 }
 
-/* 팝업 */
-function openPopup(){
-    document.getElementById("popup").style.display="block";
-}
-function closePopup(){
-    document.getElementById("popup").style.display="none";
+/* 💰 BET MODE */
+function playBet(){
+    let bet = Number(document.getElementById("betAmount").value);
+
+    if(isNaN(bet)||bet<=0){
+        document.getElementById("betResult").innerText="❌ invalid";
+        return;
+    }
+
+    if(bet>money){
+        document.getElementById("betResult").innerText="❌ no money";
+        return;
+    }
+
+    money-=bet;
+
+    let win = Math.random()<0.5;
+
+    if(win){
+        money+=bet*2;
+        document.getElementById("betResult").innerText="🎉 WIN +"+bet;
+    }else{
+        document.getElementById("betResult").innerText="💀 LOSE -"+bet;
+    }
+
+    updateMoney();
 }
 
 /* 확률 */
 function showOdds(){
-    document.getElementById("popup").style.display="block";
-    document.getElementById("popup").innerHTML=`
-        <h3>📊 확률</h3>
-        <p>🎰 슬롯: 약 0.46%</p>
-        <p>🪙 코인: 50%</p>
-        <p>🎮 미니게임: 실력 (최대 100)</p>
-        <button onclick="closePopup()">나가기</button>
-    `;
+    alert("🎰 슬롯 0.46%\n🪙 코인 50%\n🎮 미니게임 실력\n💰 베팅 50%");
+}
+
+/* 팝업 */
+function openPopup(){
+    alert("⏳ 준비중");
 }
 
 </script>
