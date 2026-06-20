@@ -15,7 +15,6 @@ body{
     overflow:hidden;
 }
 
-/* ✨ 반짝 배경 */
 body::before{
     content:"";
     position:fixed;
@@ -36,14 +35,12 @@ body::before{
     100%{transform:translateY(-60px);}
 }
 
-/* 🧱 레이아웃 */
 #app{
     display:grid;
     grid-template-columns:140px 1fr 140px;
     height:100vh;
 }
 
-/* 💰 TOP */
 #topBar{
     position:absolute;
     top:10px;
@@ -55,7 +52,6 @@ body::before{
 
 #bestScore{color:gold;}
 
-/* 🎮 버튼 (노란색) */
 .card{
     background:gold;
     color:black;
@@ -73,7 +69,6 @@ body::before{
     box-shadow:0 0 15px gold;
 }
 
-/* 🧭 좌우 */
 #leftPanel,#rightPanel{
     display:flex;
     flex-direction:column;
@@ -81,7 +76,6 @@ body::before{
     padding:10px;
 }
 
-/* 🎯 중앙 */
 #center{
     display:flex;
     flex-direction:column;
@@ -89,7 +83,6 @@ body::before{
     align-items:center;
 }
 
-/* 🎰 슬롯 */
 .slot-box{
     font-size:60px;
     padding:20px;
@@ -98,14 +91,11 @@ body::before{
     border-radius:15px;
 }
 
-/* 🪙 */
 .coin{font-size:80px;}
 
-/* 화면 */
 .screen{display:none;}
 .active{display:flex;}
 
-/* 📊 모달 */
 .modal{
     display:none;
     position:fixed;
@@ -187,17 +177,9 @@ body::before{
 <div id="shop" class="screen">
     <h2>🏪 SHOP</h2>
 
-    <div class="card" onclick="buy('luck')">
-        🍀 행운 부적<br>2000원<br>+1% 확률
-    </div>
-
-    <div class="card" onclick="buy('bet')">
-        💎 베팅 부스트<br>2000원<br>+1% 확률
-    </div>
-
-    <div class="card" onclick="buy('mini')">
-        ⚡ 미니 부스터<br>2000원<br>+1% 보상
-    </div>
+    <div class="card" onclick="buy('luck')">🍀 행운 부적<br>2000원</div>
+    <div class="card" onclick="buy('bet')">💎 베팅 부스트<br>2000원</div>
+    <div class="card" onclick="buy('mini')">⚡ 미니 부스터<br>2000원</div>
 
     <div class="card" onclick="goMode()">BACK</div>
 </div>
@@ -208,12 +190,20 @@ body::before{
     <div class="card" onclick="goWelcome()">BACK</div>
 </div>
 
+<!-- 🎮 MINI GAME -->
+<div id="mini" class="screen">
+    <h2>🎮 MINI GAME</h2>
+    <h1 id="miniText" style="color:gold;">WAIT...</h1>
+    <div class="card" onclick="pressMini()">PRESS</div>
+    <div class="card" onclick="goMode()">BACK</div>
+</div>
+
 </div>
 
 <div id="rightPanel"></div>
 </div>
 
-<!-- 📊 MODAL -->
+<!-- ODDS -->
 <div id="oddsModal" class="modal">
     <div class="modalBox">
         <h2>📊 ODDS</h2>
@@ -231,6 +221,8 @@ let best=0;
 
 let inventory=[];
 let equipped={};
+
+let canPress=false;
 
 /* UI */
 function show(id){
@@ -275,7 +267,6 @@ function flip(choice){
     money-=50;
 
     let res=Math.random()<0.5?"HEAD":"TAIL";
-
     document.getElementById("coinFace").innerText=res;
 
     if(choice===res) money+=100;
@@ -301,19 +292,13 @@ function playBet(){
     update();
 }
 
-/* MINI */
-function openMini(){alert("MINI");}
-
 /* SHOP */
 function openShop(){show("shop");}
 
 function buy(type){
-
     if(money<2000) return;
     money-=2000;
-
     inventory.push(type);
-
     update();
 }
 
@@ -331,20 +316,43 @@ function openInventory(){
 
         let d=document.createElement("div");
         d.className="card";
-
         d.innerHTML=name+"<br>장착";
 
         d.onclick=()=>{
-
             equipped[i]=true;
             inventory.splice(idx,1);
-
             update();
             openInventory();
         };
 
         box.appendChild(d);
     });
+}
+
+/* MINI GAME */
+function openMini(){
+    show("mini");
+    startMini();
+}
+
+function startMini(){
+    canPress=false;
+    document.getElementById("miniText").innerText="WAIT...";
+
+    setTimeout(()=>{
+        document.getElementById("miniText").innerText="GO!";
+        canPress=true;
+    },Math.random()*2000+1000);
+}
+
+function pressMini(){
+    if(!canPress) return;
+
+    let bonus = equipped.mini ? 50 : 0;
+    money += 100 + bonus;
+
+    update();
+    startMini();
 }
 
 /* ODDS */
@@ -358,13 +366,8 @@ function closeOdds(){
 
 /* UPDATE */
 function update(){
-
     document.getElementById("money").innerText="💰 "+money;
-
-    if(money>best){
-        best=money;
-    }
-
+    if(money>best) best=money;
     document.getElementById("bestScore").innerText="🏆 "+best;
 }
 
