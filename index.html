@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<title>🎰 슬롯머신 (돈 저장 시스템)</title>
+<title>🎰 슬롯머신</title>
 
 <style>
 body {
@@ -17,14 +17,14 @@ h1 {
 }
 
 .slot {
-    font-size: 60px;
+    font-size: 70px;
     margin: 20px;
+    letter-spacing: 10px;
 }
 
 button {
     padding: 10px 20px;
     font-size: 18px;
-    margin: 10px;
     cursor: pointer;
 }
 
@@ -49,23 +49,21 @@ button {
 
 <div class="slot" id="slot">❓ ❓ ❓</div>
 
-<button onclick="spin()">돌리기 (100원)</button>
+<button onclick="spin()" id="btn">돌리기 (100원)</button>
 <button onclick="resetMoney()">돈 초기화</button>
 
 <div id="result"></div>
 
 <script>
-// 저장 키
 const SAVE_KEY = "slot_money";
 
-// 돈 불러오기
 let money = Number(localStorage.getItem(SAVE_KEY));
+if (isNaN(money)) money = 1000;
 
-if (isNaN(money)) {
-    money = 1000;
-}
+const items = ["🍒", "🍋", "🍇", "🔔", "⭐", "7️⃣"];
 
-// UI 업데이트
+let spinning = false;
+
 function updateUI() {
     document.getElementById("money").innerText = "돈: " + money + "원";
     localStorage.setItem(SAVE_KEY, money);
@@ -73,42 +71,57 @@ function updateUI() {
 
 updateUI();
 
-// 슬롯 아이템
-const items = ["🍒", "🍋", "🍇", "🔔", "⭐", "7️⃣"];
-
 function spin() {
+    if (spinning) return;
     if (money < 100) {
-        document.getElementById("result").innerText = "돈이 부족해!";
+        document.getElementById("result").innerText = "돈 부족!";
         return;
     }
 
+    spinning = true;
     money -= 100;
-
-    let a = items[Math.floor(Math.random() * items.length)];
-    let b = items[Math.floor(Math.random() * items.length)];
-    let c = items[Math.floor(Math.random() * items.length)];
-
-    document.getElementById("slot").innerText = `${a} ${b} ${c}`;
-
-    // 당첨 조건
-    if (a === b && b === c) {
-        let win = 1000;
-        money += win;
-        document.getElementById("result").innerText = "잭팟! +1000원 🎉";
-    } 
-    else if (a === b || b === c || a === c) {
-        let win = 300;
-        money += win;
-        document.getElementById("result").innerText = "+300원!";
-    } 
-    else {
-        document.getElementById("result").innerText = "꽝 😭";
-    }
-
     updateUI();
+
+    document.getElementById("result").innerText = "돌리는 중... 🎰";
+
+    let slot = document.getElementById("slot");
+    let btn = document.getElementById("btn");
+
+    btn.disabled = true;
+
+    // 돌아가는 애니메이션
+    let interval = setInterval(() => {
+        let a = items[Math.floor(Math.random() * items.length)];
+        let b = items[Math.floor(Math.random() * items.length)];
+        let c = items[Math.floor(Math.random() * items.length)];
+        slot.innerText = `${a} ${b} ${c}`;
+    }, 100);
+
+    // 2.5초 후 멈춤
+    setTimeout(() => {
+        clearInterval(interval);
+
+        let a = items[Math.floor(Math.random() * items.length)];
+        let b = items[Math.floor(Math.random() * items.length)];
+        let c = items[Math.floor(Math.random() * items.length)];
+
+        slot.innerText = `${a} ${b} ${c}`;
+
+        // 🎯 규칙: 3개 같을 때만 잭팟
+        if (a === b && b === c) {
+            money += 1000;
+            document.getElementById("result").innerText = "🎉 잭팟! +1000원";
+        } else {
+            document.getElementById("result").innerText = "꽝 😭";
+        }
+
+        updateUI();
+        btn.disabled = false;
+        spinning = false;
+
+    }, 2500);
 }
 
-// 돈 초기화
 function resetMoney() {
     money = 1000;
     updateUI();
