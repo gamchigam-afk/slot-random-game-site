@@ -2,6 +2,8 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>🎰 Casino Game</title>
 
 <style>
@@ -10,13 +12,40 @@ body {
     background: radial-gradient(circle at top, #1a1a1a, #000);
     color: gold;
     font-family: Arial;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
     text-align: center;
 }
 
-/* 공통 버튼 */
+/* 전체 화면 박스 */
+#app {
+    width: 100%;
+    max-width: 500px;
+    padding: 20px;
+}
+
+/* 돈 */
+#money {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: white;
+}
+
+/* 화면 */
+.screen {
+    display: none;
+}
+
+.active {
+    display: block;
+}
+
+/* 버튼 */
 button {
     margin: 6px;
-    padding: 10px 16px;
+    padding: 10px 14px;
     border: none;
     border-radius: 8px;
     background: gold;
@@ -24,43 +53,23 @@ button {
     cursor: pointer;
 }
 
-button:hover {
-    transform: scale(1.05);
+button:active {
+    transform: scale(0.97);
 }
 
-/* 화면 */
-.screen {
-    display: none;
-    padding-top: 40px;
-}
-
-.active {
-    display: block;
-}
-
-/* 슬롯 박스 */
+/* 슬롯 */
 .slot-box {
-    margin: 20px auto;
-    width: 320px;
+    font-size: 60px;
     padding: 20px;
-    border: 5px solid gold;
+    border: 4px solid gold;
     border-radius: 15px;
     background: #111;
-    box-shadow: 0 0 20px gold;
-    font-size: 60px;
-    letter-spacing: 10px;
-}
-
-/* 왼쪽 메뉴 */
-.side-menu {
-    position: absolute;
-    left: 20px;
-    top: 120px;
-    text-align: left;
+    margin: 20px 0;
 }
 
 /* 팝업 */
 #popup {
+    display: none;
     position: fixed;
     top: 30%;
     left: 50%;
@@ -68,27 +77,26 @@ button:hover {
     background: #111;
     border: 3px solid gold;
     padding: 20px;
-    display: none;
-    box-shadow: 0 0 20px gold;
 }
 </style>
 </head>
 
 <body>
 
-<!-- 💰 돈 -->
+<div id="app">
+
 <div id="money">💰 1000원</div>
 
-<!-- 🌟 WELCOME -->
+<!-- 🎉 WELCOME -->
 <div id="welcome" class="screen active">
-    <h1>🎉 WELCOME TO CASINO</h1>
+    <h1>🎉 CASINO</h1>
 
     <button onclick="goMode()">CHOOSE GAME MODE</button>
 
-    <div class="side-menu">
-        <button onclick="openPopup()">⚙️ 설정</button><br>
-        <button onclick="openPopup()">🎮 미니게임</button><br>
-        <button onclick="openPopup()">📊 확률보기</button>
+    <div>
+        <button onclick="openPopup()">⚙️ 설정</button>
+        <button onclick="openPopup()">🎮 미니게임</button>
+        <button onclick="openPopup()">📊 확률</button>
     </div>
 </div>
 
@@ -96,13 +104,15 @@ button:hover {
 <div id="mode" class="screen">
     <h2>🎮 GAME MODE</h2>
 
-    <button onclick="openSlot()">🎰 SLOT MODE</button><br>
+    <button onclick="openSlot()">🎰 SLOT</button>
+    <button onclick="openCoin()">🪙 COIN FLIP</button>
+    <br>
     <button onclick="goWelcome()">🚪 나가기</button>
 </div>
 
 <!-- 🎰 SLOT -->
 <div id="slot" class="screen">
-    <h2>🎰 SLOT GAME</h2>
+    <h2>🎰 SLOT</h2>
 
     <div class="slot-box" id="slotBox">❓ ❓ ❓</div>
 
@@ -112,59 +122,64 @@ button:hover {
     <p id="result"></p>
 </div>
 
+<!-- 🪙 COIN -->
+<div id="coin" class="screen">
+    <h2>🪙 COIN FLIP</h2>
+
+    <h1 id="coinFace">❓</h1>
+
+    <button onclick="flip('HEAD')">HEAD</button>
+    <button onclick="flip('TAIL')">TAIL</button>
+    <br>
+    <button onclick="goMode()">🚪 나가기</button>
+
+    <p id="coinResult"></p>
+</div>
+
+</div>
+
 <!-- 팝업 -->
 <div id="popup">
-    <h3>⏳ 아직 준비중입니다</h3>
+    <h3>⏳ 준비중</h3>
     <button onclick="closePopup()">나가기</button>
 </div>
 
 <script>
-const SAVE_KEY = "casino_money";
-
-let money = Number(localStorage.getItem(SAVE_KEY));
-if (isNaN(money)) money = 1000;
+let money = Number(localStorage.getItem("money"));
+if(isNaN(money)) money = 1000;
 
 const items = ["🍒","🍋","🍇","🔔","⭐","7️⃣"];
 
-let spinning = false;
-
-/* 💰 돈 업데이트 */
 function updateMoney(){
     document.getElementById("money").innerText = "💰 " + money + "원";
-    localStorage.setItem(SAVE_KEY, money);
+    localStorage.setItem("money", money);
 }
 updateMoney();
 
-/* 🎮 화면 전환 */
-function showScreen(id){
+/* 화면 */
+function show(id){
     document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
     document.getElementById(id).classList.add("active");
 }
 
-function goWelcome(){ showScreen("welcome"); }
-function goMode(){ showScreen("mode"); }
-function openSlot(){ showScreen("slot"); }
+function goWelcome(){ show("welcome"); }
+function goMode(){ show("mode"); }
+function openSlot(){ show("slot"); }
 
 /* 🎰 슬롯 */
 function spin(){
-    if(spinning) return;
     if(money < 100){
-        document.getElementById("result").innerText = "돈 부족 💸";
+        document.getElementById("result").innerText = "돈 부족";
         return;
     }
 
-    spinning = true;
     money -= 100;
     updateMoney();
 
     let box = document.getElementById("slotBox");
-    let btns = document.querySelectorAll("button");
+    document.getElementById("result").innerText = "돌리는 중...";
 
-    document.querySelector("#slot button").disabled = true;
-
-    document.getElementById("result").innerText = "🎰 SPINNING...";
-
-    let interval = setInterval(()=>{
+    let anim = setInterval(()=>{
         let a = items[Math.floor(Math.random()*items.length)];
         let b = items[Math.floor(Math.random()*items.length)];
         let c = items[Math.floor(Math.random()*items.length)];
@@ -172,7 +187,7 @@ function spin(){
     }, 80);
 
     setTimeout(()=>{
-        clearInterval(interval);
+        clearInterval(anim);
 
         let a = items[Math.floor(Math.random()*items.length)];
         let b = items[Math.floor(Math.random()*items.length)];
@@ -182,24 +197,61 @@ function spin(){
 
         if(a===b && b===c){
             money += 1000;
-            document.getElementById("result").innerText = "🎉 JACKPOT!";
+            document.getElementById("result").innerText = "🎉 JACKPOT";
         } else {
             document.getElementById("result").innerText = "😢 LOSE";
         }
 
         updateMoney();
-        spinning = false;
-
     }, 2000);
+}
+
+/* 🪙 코인 */
+function openCoin(){
+    show("coin");
+}
+
+function flip(choice){
+    if(money < 50){
+        document.getElementById("coinResult").innerText = "돈 부족";
+        return;
+    }
+
+    money -= 50;
+    updateMoney();
+
+    let face = document.getElementById("coinFace");
+    let resultText = document.getElementById("coinResult");
+
+    resultText.innerText = "던지는 중...";
+
+    let anim = setInterval(()=>{
+        face.innerText = Math.random() < 0.5 ? "🪙 HEAD" : "🪙 TAIL";
+    }, 100);
+
+    setTimeout(()=>{
+        clearInterval(anim);
+
+        let result = Math.random() < 0.5 ? "HEAD" : "TAIL";
+        face.innerText = result;
+
+        if(choice === result){
+            money += 100;
+            resultText.innerText = "🎉 WIN +100";
+        } else {
+            resultText.innerText = "😢 LOSE";
+        }
+
+        updateMoney();
+    }, 1200);
 }
 
 /* 팝업 */
 function openPopup(){
-    document.getElementById("popup").style.display = "block";
+    document.getElementById("popup").style.display="block";
 }
-
 function closePopup(){
-    document.getElementById("popup").style.display = "none";
+    document.getElementById("popup").style.display="none";
 }
 </script>
 
