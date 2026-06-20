@@ -35,8 +35,6 @@ button{
     cursor:pointer;
 }
 
-button:active{ transform:scale(0.97); }
-
 .screen{ display:none; }
 .active{ display:block; }
 
@@ -54,6 +52,23 @@ button:active{ transform:scale(0.97); }
     background:#111;
     border-radius:15px;
     margin:20px 0;
+}
+
+/* 🪙 코인 애니메이션 */
+.coin {
+    font-size: 80px;
+    display: inline-block;
+    transition: transform 0.3s;
+}
+
+.flip {
+    animation: flipAnim 0.3s infinite;
+}
+
+@keyframes flipAnim {
+    0%   { transform: rotateY(0deg); }
+    50%  { transform: rotateY(180deg); }
+    100% { transform: rotateY(360deg); }
 }
 
 /* 팝업 */
@@ -80,12 +95,12 @@ button:active{ transform:scale(0.97); }
 <div id="welcome" class="screen active">
     <h1>🎉 CASINO</h1>
 
-    <button onclick="goMode()">CHOOSE GAME MODE</button>
+    <button onclick="goMode()">🎮 GAME MODE</button>
 
     <div>
         <button onclick="openPopup()">⚙️ 설정</button>
-        <button onclick="openPopup()">🎮 미니게임</button>
-        <button onclick="openPopup()">📊 확률</button>
+        <button onclick="openMini()">🎮 미니게임</button>
+        <button onclick="showOdds()">📊 확률</button>
     </div>
 </div>
 
@@ -95,7 +110,6 @@ button:active{ transform:scale(0.97); }
 
     <button onclick="openSlot()">🎰 SLOT</button>
     <button onclick="openCoin()">🪙 COIN FLIP</button>
-    <button onclick="openMini()">🎮 MINI GAME</button>
     <br>
     <button onclick="goWelcome()">🚪 나가기</button>
 </div>
@@ -116,7 +130,9 @@ button:active{ transform:scale(0.97); }
 <div id="coin" class="screen">
     <h2>🪙 COIN FLIP</h2>
 
-    <h1 id="coinFace">❓</h1>
+    <div class="coin" id="coinFace">❓</div>
+
+    <br>
 
     <button onclick="flip('HEAD')">HEAD</button>
     <button onclick="flip('TAIL')">TAIL</button>
@@ -212,7 +228,7 @@ function spin(){
     },2000);
 }
 
-/* 🪙 COIN */
+/* 🪙 COIN (애니메이션 추가) */
 function flip(choice){
     if(money<50){
         document.getElementById("coinResult").innerText="돈 부족";
@@ -223,30 +239,36 @@ function flip(choice){
     updateMoney();
 
     let face=document.getElementById("coinFace");
-    document.getElementById("coinResult").innerText="던지는 중...";
+    let resultText=document.getElementById("coinResult");
+
+    resultText.innerText="🪙 던지는 중...";
+
+    // 🔥 회전 모션 시작
+    face.classList.add("flip");
 
     let anim=setInterval(()=>{
-        face.innerText=Math.random()<0.5?"🪙 HEAD":"🪙 TAIL";
+        face.innerText=Math.random()<0.5?"HEAD":"TAIL";
     },100);
 
     setTimeout(()=>{
         clearInterval(anim);
+        face.classList.remove("flip");
 
         let result=Math.random()<0.5?"HEAD":"TAIL";
         face.innerText=result;
 
         if(choice===result){
             money+=100;
-            document.getElementById("coinResult").innerText="🎉 WIN +100";
+            resultText.innerText="🎉 WIN +100";
         }else{
-            document.getElementById("coinResult").innerText="😢 LOSE";
+            resultText.innerText="😢 LOSE";
         }
 
         updateMoney();
-    },1200);
+    },1500);
 }
 
-/* 🎮 MINI GAME */
+/* 🎮 MINI GAME (보상 최대 100) */
 let canPress=false;
 let startTime=0;
 
@@ -277,11 +299,11 @@ function pressMini(){
     document.getElementById("miniBtn").disabled=true;
 
     if(t<300){
-        money+=300;
-        document.getElementById("miniResult").innerText="🏆 GOD +300";
+        money+=100;   // 🔥 최대 100으로 제한
+        document.getElementById("miniResult").innerText="🏆 PERFECT +100";
     }else if(t<600){
-        money+=150;
-        document.getElementById("miniResult").innerText="🎉 GOOD +150";
+        money+=50;
+        document.getElementById("miniResult").innerText="🎉 GOOD +50";
     }else{
         document.getElementById("miniResult").innerText="😢 SLOW";
     }
@@ -296,6 +318,18 @@ function openPopup(){
 }
 function closePopup(){
     document.getElementById("popup").style.display="none";
+}
+
+/* 확률 */
+function showOdds(){
+    document.getElementById("popup").style.display="block";
+    document.getElementById("popup").innerHTML=`
+        <h3>📊 확률</h3>
+        <p>🎰 슬롯: 약 0.46%</p>
+        <p>🪙 코인: 50%</p>
+        <p>🎮 미니게임: 실력 (최대 100)</p>
+        <button onclick="closePopup()">나가기</button>
+    `;
 }
 
 </script>
