@@ -15,50 +15,18 @@ color:white;
 overflow:hidden;
 }
 
-/* TOP */
-#top{
-position:fixed;
-top:10px;
-left:50%;
-transform:translateX(-50%);
-text-align:center;
-font-weight:bold;
-}
-
-/* FX */
-#fx{
-position:fixed;
-top:50px;
-right:20px;
-}
-
-.fx{
-animation:up 1s forwards;
-}
-
-@keyframes up{
-0%{opacity:1;transform:translateY(0);}
-100%{opacity:0;transform:translateY(-20px);}
-}
-
-.plus{color:lime;}
-.minus{color:red;}
-
-/* SCREEN */
 .screen{display:none;}
 .active{display:flex;}
 
-/* CENTER */
 #center{
 height:100vh;
 display:flex;
 flex-direction:column;
-align-items:center;
 justify-content:center;
+align-items:center;
 gap:10px;
 }
 
-/* CARD UI */
 .card{
 background:gold;
 color:black;
@@ -70,11 +38,48 @@ text-align:center;
 transition:0.2s;
 }
 
-.card:hover{
-transform:scale(1.05);
+.card:hover{transform:scale(1.05);}
+
+#top{
+position:fixed;
+top:10px;
+left:50%;
+transform:translateX(-50%);
+text-align:center;
+font-weight:bold;
 }
 
-/* RIGHT MENU */
+#fx{
+position:fixed;
+top:50px;
+right:20px;
+}
+
+.fx{animation:up 1s forwards;}
+
+@keyframes up{
+0%{opacity:1;transform:translateY(0);}
+100%{opacity:0;transform:translateY(-20px);}
+}
+
+.plus{color:lime;}
+.minus{color:red;}
+
+.slot,.coin{
+font-size:55px;
+color:gold;
+}
+
+.flash{
+animation:flash 0.4s;
+}
+
+@keyframes flash{
+0%{transform:scale(1);}
+50%{transform:scale(1.3);}
+100%{transform:scale(1);}
+}
+
 #side{
 position:fixed;
 right:10px;
@@ -83,23 +88,6 @@ transform:translateY(-50%);
 display:flex;
 flex-direction:column;
 gap:10px;
-}
-
-/* SLOT */
-.slot,.coin{
-font-size:55px;
-color:gold;
-}
-
-/* ANIMATION FX */
-.flash{
-animation:flash 0.4s;
-}
-
-@keyframes flash{
-0%{transform:scale(1);}
-50%{transform:scale(1.3);color:white;}
-100%{transform:scale(1);}
 }
 
 </style>
@@ -125,9 +113,9 @@ animation:flash 0.4s;
 <!-- MODE -->
 <div id="mode" class="screen">
 
-<div class="card" onclick="Game.spin()">🎰 SLOT</div>
-<div class="card" onclick="Game.coin('HEAD')">🪙 COIN</div>
-<div class="card" onclick="Game.bet()">💰 BET</div>
+<div class="card" onclick="UI.go('slot')">🎰 SLOT</div>
+<div class="card" onclick="UI.go('coin')">🪙 COIN</div>
+<div class="card" onclick="UI.go('bet')">💰 BET</div>
 
 <div id="side">
 <div class="card" onclick="UI.go('inventory')">🎒 INV</div>
@@ -162,21 +150,10 @@ animation:flash 0.4s;
 
 <!-- SHOP -->
 <div id="shop" class="screen">
-
-<div class="card" onclick="Shop.buy('slot')">
-🎰 슬롯 부스터<br>+3% 확률<br>2000
-</div>
-
-<div class="card" onclick="Shop.buy('coin')">
-🪙 코인 부스터<br>+3% 확률<br>2000
-</div>
-
-<div class="card" onclick="Shop.buy('bet')">
-💰 베팅 부스터<br>+3% 확률<br>2000
-</div>
-
+<div class="card" onclick="Shop.buy('slot')">🎰 슬롯 +3% (2000)</div>
+<div class="card" onclick="Shop.buy('coin')">🪙 코인 +3% (2000)</div>
+<div class="card" onclick="Shop.buy('bet')">💰 베팅 +3% (2000)</div>
 <div class="card" onclick="UI.go('mode')">BACK</div>
-
 </div>
 
 <!-- INVENTORY -->
@@ -198,7 +175,6 @@ animation:flash 0.4s;
 
 <script>
 
-/* STATE */
 const State={
 money:1000,
 best:0,
@@ -219,19 +195,11 @@ setTimeout(()=>d.remove(),1000);
 
 /* MONEY */
 const Money={
-add(v){
-State.money+=v;
-fx(v);
-Render.update();
-},
-sub(v){
-State.money-=v;
-fx(-v);
-Render.update();
-}
+add(v){State.money+=v;fx(v);Render.update();},
+sub(v){State.money-=v;fx(-v);Render.update();}
 }
 
-/* UI */
+/* UI (핵심 수정: 게임 화면 진입만 담당) */
 const UI={
 go(id){
 document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
@@ -239,7 +207,7 @@ document.getElementById(id).classList.add("active");
 }
 }
 
-/* SLOT (릴 감속 모션) */
+/* SLOT (진짜 플레이 구조) */
 const Game={
 
 spinStart(){
@@ -250,9 +218,7 @@ Money.sub(100);
 const box=document.querySelector(".slot");
 const arr=["🍒","🍋","🍇","💎","7️⃣"];
 
-let speed=80;
 let count=0;
-
 clearInterval(State.timer.slot);
 
 State.timer.slot=setInterval(()=>{
@@ -263,20 +229,23 @@ arr[Math.random()*5|0]+" "+
 arr[Math.random()*5|0];
 
 count++;
-if(count>15) speed+=20;
 
-if(count>30){
+if(count>25){
 clearInterval(State.timer.slot);
 
-if(Math.random()<0.03+(State.equip.slot?0.03:0)){
+const win=Math.random()<0.03+(State.equip.slot?0.03:0);
+
+if(win){
 box.classList.add("flash");
 setTimeout(()=>box.classList.remove("flash"),400);
 Money.add(1000);
+}else{
+box.innerText="❌ FAIL";
 }
 
 }
 
-},speed);
+},70);
 
 },
 
@@ -286,10 +255,9 @@ if(State.money<50) return;
 Money.sub(50);
 
 const face=document.querySelector(".coin");
+let count=0;
 
 clearInterval(State.timer.coin);
-
-let count=0;
 
 State.timer.coin=setInterval(()=>{
 
@@ -297,6 +265,7 @@ face.innerText=Math.random()<0.5?"HEAD":"TAIL";
 count++;
 
 if(count>20){
+
 clearInterval(State.timer.coin);
 
 const r=Math.random()<0.5+(State.equip.coin?0.03:0)?"HEAD":"TAIL";
@@ -341,25 +310,19 @@ Render.inv();
 
 /* INVENTORY */
 const Render={
-
 inv(){
 const box=document.getElementById("invBox");
 box.innerHTML="";
-
 State.inv.forEach((i,idx)=>{
-
 const d=document.createElement("div");
 d.className="card";
 d.innerText=i+" 장착";
-
 d.onclick=()=>{
 State.equip[i]=true;
 State.inv.splice(idx,1);
 Render.inv();
 };
-
 box.appendChild(d);
-
 });
 },
 
@@ -368,46 +331,32 @@ State.best=Math.max(State.best,State.money);
 document.getElementById("moneyUI").innerText="💰 "+State.money;
 document.getElementById("bestUI").innerText="🏆 "+State.best;
 }
-
 }
 
-/* MINI GAME (GO 타이밍) */
+/* MINI */
 const Mini={
-
 start(){
 this.ready=false;
 document.getElementById("miniText").innerText="WAIT...";
-
 setTimeout(()=>{
 this.ready=true;
 this.time=Date.now();
 document.getElementById("miniText").innerText="GO!";
 },Math.random()*2000+1000);
 },
-
 click(){
-
 if(!this.ready){
 this.start();
 return;
 }
-
 const t=(Date.now()-this.time)/1000;
-
 if(t<=0.2) Money.add(100);
 else if(t<=0.5) Money.add(50);
-
 this.start();
-
 },
-
-reset(){
-this.start();
+reset(){this.start();}
 }
 
-}
-
-/* INIT */
 Render.update();
 
 </script>
