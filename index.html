@@ -7,8 +7,6 @@
 
 <style>
 
-/* ================= BASE ================= */
-
 body{
 margin:0;
 background:#000;
@@ -18,7 +16,28 @@ overflow:hidden;
 text-shadow:0 0 10px #00ffff;
 }
 
-/* ================= WINDOW SYSTEM ================= */
+/* ================= MONEY UI ================= */
+
+#ui{
+position:fixed;
+top:10px;
+left:50%;
+transform:translateX(-50%);
+text-align:center;
+z-index:999;
+}
+
+#moneyUI{
+font-size:24px;
+color:#00ffff;
+}
+
+#bestUI{
+font-size:18px;
+color:gold;
+}
+
+/* ================= WINDOW ================= */
 
 .window{
 position:absolute;
@@ -32,6 +51,7 @@ transform:scale(0.95);
 pointer-events:none;
 
 transition:0.35s ease;
+
 display:flex;
 flex-direction:column;
 align-items:center;
@@ -42,23 +62,6 @@ justify-content:center;
 opacity:1;
 transform:scale(1);
 pointer-events:auto;
-}
-
-/* ================= TITLE ================= */
-
-.title{
-font-size:60px;
-animation:blink 1.5s infinite;
-}
-
-.beta{
-font-size:14px;
-margin-left:8px;
-}
-
-@keyframes blink{
-0%,100%{opacity:1;}
-50%{opacity:0.4;}
 }
 
 /* ================= BUTTON ================= */
@@ -76,16 +79,20 @@ transition:.2s;
 transform:scale(1.05);
 }
 
-/* ================= SIDE MENU ================= */
+#slotBox{
+font-size:70px;
+margin:20px;
+letter-spacing:10px;
+}
 
-.side{
-position:fixed;
-left:10px;
-top:50%;
-transform:translateY(-50%);
-display:flex;
-flex-direction:column;
-gap:10px;
+.spinning{
+animation:shake 0.1s infinite;
+}
+
+@keyframes shake{
+0%{transform:translateY(0);}
+50%{transform:translateY(-5px);}
+100%{transform:translateY(0);}
 }
 
 </style>
@@ -93,24 +100,16 @@ gap:10px;
 
 <body>
 
-<!-- ================= SIDE BUTTONS (ALL WINDOWS) ================= -->
+<!-- ================= MONEY UI ================= -->
 
-<div class="side">
-
-<div class="card" onclick="UI.go('shop')">🏪 SHOP</div>
-<div class="card" onclick="UI.go('inventory')">🎒 INVENTORY</div>
-<div class="card" onclick="UI.go('mini')">🎮 MINI GAME</div>
-<div class="card" onclick="UI.go('mode')">🎰 MODE</div>
-
+<div id="ui">
+<div id="moneyUI">💰 1000</div>
+<div id="bestUI">🏆 1000</div>
 </div>
 
 <!-- ================= WELCOME ================= -->
 
 <div class="window active" id="welcome">
-
-<div class="title">
-NEON CASINO X <span class="beta">BETA</span>
-</div>
 
 <div class="card" onclick="UI.go('mode')">
 START GAME
@@ -135,7 +134,8 @@ START GAME
 <div class="window" id="slot">
 
 <h2>SLOT MACHINE</h2>
-<div id="slotBox">❓❓❓</div>
+
+<div id="slotBox">❓ ❓ ❓</div>
 
 <div class="card" onclick="spin()">SPIN</div>
 <div class="card" onclick="UI.go('mode')">BACK</div>
@@ -168,77 +168,94 @@ START GAME
 
 </div>
 
-<!-- ================= SHOP ================= -->
-
-<div class="window" id="shop">
-
-<h2>SHOP</h2>
-
-<div class="card">SLOT BOOST</div>
-<div class="card">COIN BOOST</div>
-<div class="card">BET BOOST</div>
-
-<div class="card" onclick="UI.go('welcome')">BACK</div>
-
-</div>
-
-<!-- ================= INVENTORY ================= -->
-
-<div class="window" id="inventory">
-
-<h2>INVENTORY</h2>
-
-<div>EMPTY</div>
-
-<div class="card" onclick="UI.go('welcome')">BACK</div>
-
-</div>
-
-<!-- ================= MINI GAME ================= -->
-
-<div class="window" id="mini">
-
-<h2>REACTION GAME</h2>
-
-<div id="miniText">WAIT...</div>
-
-<div class="card" onclick="miniClick()">CLICK</div>
-<div class="card" onclick="miniReset()">RESET</div>
-
-<div class="card" onclick="UI.go('welcome')">BACK</div>
-
-</div>
-
-<!-- ================= JS ================= -->
-
 <script>
+
+/* ================= STATE ================= */
+
+const State={
+money:1000,
+best:1000
+};
+
+/* ================= RENDER ================= */
+
+function render(){
+document.getElementById("moneyUI").innerText="💰 "+State.money;
+document.getElementById("bestUI").innerText="🏆 "+State.best;
+}
+
+/* ================= MONEY ================= */
+
+function add(v){
+State.money+=v;
+if(State.money>State.best) State.best=State.money;
+render();
+}
+
+function sub(v){
+State.money-=v;
+if(State.money<0) State.money=0;
+render();
+}
+
+render();
 
 /* ================= UI ================= */
 
 const UI={
 current:"welcome",
-
 go(id){
-
-document.getElementById(this.current)
-.classList.remove("active");
-
-document.getElementById(id)
-.classList.add("active");
-
+document.getElementById(this.current).classList.remove("active");
+document.getElementById(id).classList.add("active");
 this.current=id;
-
 }
 };
 
-/* ================= SLOT ================= */
+/* ================= SLOT (FIXED MOTION) ================= */
+
+const symbols=["🍒","🍋","🔔","⭐","7️⃣"];
 
 function spin(){
-document.getElementById("slotBox").innerText="SPIN...";
-setTimeout(()=>{
-document.getElementById("slotBox").innerText=
-Math.random()<0.3?"WIN":"LOSE";
-},800);
+
+const box=document.getElementById("slotBox");
+
+sub(100);
+
+box.classList.add("spinning");
+
+let count=0;
+
+let interval=setInterval(()=>{
+
+box.innerText=
+symbols[Math.floor(Math.random()*symbols.length)]+" "
++symbols[Math.floor(Math.random()*symbols.length)]+" "
++symbols[Math.floor(Math.random()*symbols.length)];
+
+count++;
+
+if(count>18){
+
+clearInterval(interval);
+box.classList.remove("spinning");
+
+let final=
+symbols[Math.floor(Math.random()*symbols.length)]+" "
++symbols[Math.floor(Math.random()*symbols.length)]+" "
++symbols[Math.floor(Math.random()*symbols.length)];
+
+box.innerText=final;
+
+if(Math.random()<0.3){
+add(500);
+}else{
+sub(0);
+}
+
+}
+
+},70);
+
 }
 
 /* ================= COIN ================= */
@@ -246,58 +263,24 @@ Math.random()<0.3?"WIN":"LOSE";
 function coin(t){
 let r=Math.random()<0.5?"HEAD":"TAIL";
 document.getElementById("coinBox").innerText=r;
+
+if(r===t) add(100);
 }
 
 /* ================= BET ================= */
 
 function bet(){
-let v=document.getElementById("betInput").value;
-alert("BET: "+v);
-}
+let v=Number(document.getElementById("betInput").value);
+if(!v||v>State.money) return;
 
-/* ================= MINI GAME ================= */
+sub(v);
 
-let mini=0;
-
-function miniStart(){
-mini=1;
-document.getElementById("miniText").innerText="지금!";
 setTimeout(()=>{
-if(mini===1){
-document.getElementById("miniText").innerText="실패";
-mini=0;
+if(Math.random()<0.5){
+add(v*2);
 }
-},2000);
+},600);
 }
-
-function miniClick(){
-
-if(mini===0){
-document.getElementById("miniText").innerText="실격!";
-return;
-}
-
-let t=Date.now()%1000;
-
-if(t<300){
-document.getElementById("miniText").innerText="50원!";
-}
-else if(t<500){
-document.getElementById("miniText").innerText="25원!";
-}
-else{
-document.getElementById("miniText").innerText="실패";
-}
-
-mini=0;
-}
-
-function miniReset(){
-document.getElementById("miniText").innerText="WAIT...";
-setTimeout(miniStart,800);
-}
-
-setTimeout(miniStart,1000);
 
 </script>
 
