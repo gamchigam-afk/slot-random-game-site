@@ -20,15 +20,15 @@ text-shadow:0 0 10px #00ffff;
 /* ================= TITLE ================= */
 
 .title{
-font-size:60px;
 text-align:center;
+font-size:60px;
 margin-top:60px;
 animation:blink 1.5s infinite;
 }
 
 .beta{
 font-size:14px;
-margin-left:10px;
+margin-left:8px;
 }
 
 @keyframes blink{
@@ -39,15 +39,19 @@ margin-left:10px;
 /* ================= UI ================= */
 
 .screen{display:none;}
+
 .card{
 padding:10px 15px;
-margin:5px;
+margin:6px;
 border:1px solid #00ffff;
 cursor:pointer;
 box-shadow:0 0 10px #00ffff;
 transition:.2s;
 }
-.card:hover{transform:scale(1.05);}
+.card:hover{
+transform:scale(1.05);
+box-shadow:0 0 20px #00ffff;
+}
 
 /* ================= SIDE ================= */
 
@@ -64,7 +68,7 @@ gap:10px;
 /* ================= MODE ================= */
 
 .modeCard{
-width:250px;
+width:260px;
 padding:15px;
 border:2px solid #00ffff;
 margin:10px;
@@ -72,10 +76,10 @@ text-align:center;
 box-shadow:0 0 20px #00ffff;
 }
 
-/* ================= MINI GAME ================= */
+/* ================= MINI ================= */
 
 #miniText{
-font-size:30px;
+font-size:28px;
 margin:20px;
 }
 
@@ -91,7 +95,7 @@ NEON CASINO X <span class="beta">BETA</span>
 <div id="moneyUI">💰 1000</div>
 <div id="bestUI">🏆 1000</div>
 
-<!-- SIDE -->
+<!-- SIDE MENU -->
 <div class="side">
 <div class="card" onclick="UI.go('shop')">🏪 SHOP</div>
 <div class="card" onclick="UI.go('inventory')">🎒 INVENTORY</div>
@@ -100,37 +104,46 @@ NEON CASINO X <span class="beta">BETA</span>
 
 <!-- WELCOME -->
 <div id="welcome" class="screen" style="display:flex;flex-direction:column;align-items:center;">
+
   <div class="card" onclick="UI.go('mode')">
-    🎮 추스 게임 모드
+    CHOOSE GAME MODE
   </div>
+
 </div>
 
 <!-- MODE -->
 <div id="mode" class="screen">
 
-<div class="modeCard">
-🎰 SLOT
-<button onclick="UI.go('slot')">START</button>
-</div>
+  <div class="modeCard">
+    🎰 SLOT GAME
+    <button onclick="UI.go('slot')">START</button>
+  </div>
 
-<div class="modeCard">
-🪙 COIN
-<button onclick="UI.go('coin')">START</button>
-</div>
+  <div class="modeCard">
+    🪙 COIN FLIP
+    <button onclick="UI.go('coin')">START</button>
+  </div>
 
-<div class="modeCard">
-💰 BET
-<button onclick="UI.go('bet')">START</button>
-</div>
+  <div class="modeCard">
+    💰 BET GAME
+    <button onclick="UI.go('bet')">START</button>
+  </div>
 
-<div class="card" onclick="UI.go('welcome')">BACK</div>
+  <div class="modeCard">
+    🎮 REACTION GAME
+    <button onclick="UI.go('mini')">START</button>
+  </div>
+
+  <div class="card" onclick="UI.go('welcome')">BACK</div>
 
 </div>
 
 <!-- SLOT -->
 <div id="slot" class="screen">
 
+<h2>SLOT MACHINE</h2>
 <div id="slotBox">❓❓❓</div>
+
 <div class="card" onclick="spin()">SPIN</div>
 <div class="card" onclick="UI.go('mode')">BACK</div>
 
@@ -139,9 +152,12 @@ NEON CASINO X <span class="beta">BETA</span>
 <!-- COIN -->
 <div id="coin" class="screen">
 
+<h2>COIN FLIP</h2>
 <div id="coinBox">❓</div>
+
 <div class="card" onclick="coin('HEAD')">HEAD</div>
 <div class="card" onclick="coin('TAIL')">TAIL</div>
+
 <div class="card" onclick="UI.go('mode')">BACK</div>
 
 </div>
@@ -149,7 +165,10 @@ NEON CASINO X <span class="beta">BETA</span>
 <!-- BET -->
 <div id="bet" class="screen">
 
-<input id="betInput" placeholder="BET">
+<h2>BET GAME</h2>
+
+<input id="betInput">
+
 <div class="card" onclick="bet()">START</div>
 <div class="card" onclick="UI.go('mode')">BACK</div>
 
@@ -177,25 +196,28 @@ NEON CASINO X <span class="beta">BETA</span>
 <!-- MINI GAME -->
 <div id="mini" class="screen">
 
+<h2>REACTION GAME</h2>
+
 <div id="miniText">WAIT...</div>
 
 <div class="card" onclick="miniClick()">CLICK</div>
 <div class="card" onclick="miniReset()">RESET</div>
-<div class="card" onclick="UI.go('welcome')">BACK</div>
+
+<div class="card" onclick="UI.go('mode')">BACK</div>
 
 </div>
 
 <script>
 
-/* ================= STATE ================= */
+/* ================= SAVE ================= */
 
-const State = JSON.parse(localStorage.getItem("casino_v4")) || {
+const State = JSON.parse(localStorage.getItem("casino_v5")) || {
 money:1000,
 best:1000
 };
 
 function save(){
-localStorage.setItem("casino_v4",JSON.stringify(State));
+localStorage.setItem("casino_v5",JSON.stringify(State));
 }
 
 /* ================= UI ================= */
@@ -212,22 +234,22 @@ document.getElementById(id).style.display="flex";
 function add(v){
 State.money+=v;
 if(State.money>State.best) State.best=State.money;
-update();
+render();
 }
 
 function sub(v){
 State.money-=v;
 if(State.money<0) State.money=0;
-update();
+render();
 }
 
-function update(){
+function render(){
 document.getElementById("moneyUI").innerText="💰 "+State.money;
 document.getElementById("bestUI").innerText="🏆 "+State.best;
 save();
 }
 
-update();
+render();
 
 /* ================= SLOT ================= */
 
@@ -241,7 +263,7 @@ document.getElementById("slotBox").innerText="WIN";
 }else{
 document.getElementById("slotBox").innerText="LOSE";
 }
-},1000);
+},900);
 }
 
 /* ================= COIN ================= */
@@ -249,12 +271,11 @@ document.getElementById("slotBox").innerText="LOSE";
 function coin(type){
 sub(50);
 let r=Math.random()<0.5?"HEAD":"TAIL";
+document.getElementById("coinBox").innerText=r;
+
 if(r===type){
 add(100);
-}else{
-sub(0);
 }
-document.getElementById("coinBox").innerText=r;
 }
 
 /* ================= BET ================= */
@@ -262,32 +283,31 @@ document.getElementById("coinBox").innerText=r;
 function bet(){
 let v=Number(document.getElementById("betInput").value);
 if(!v||v>State.money) return;
+
 sub(v);
+
 setTimeout(()=>{
 if(Math.random()<0.5){
 add(v*2);
 }else{
 sub(0);
 }
-},600);
+},500);
 }
 
 /* ================= MINI GAME ================= */
 
 let miniState=0;
-let canClick=false;
 
 function miniStart(){
 miniState=1;
-canClick=true;
 document.getElementById("miniText").innerText="지금!";
 setTimeout(()=>{
 if(miniState===1){
 miniState=2;
-canClick=false;
 document.getElementById("miniText").innerText="실패";
 }
-},3000);
+},2000);
 }
 
 function miniClick(){
@@ -317,7 +337,7 @@ miniState=0;
 function miniReset(){
 miniState=0;
 document.getElementById("miniText").innerText="WAIT...";
-setTimeout(miniStart,1000);
+setTimeout(miniStart,800);
 }
 
 setTimeout(miniStart,1000);
