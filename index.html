@@ -16,6 +16,18 @@ overflow:hidden;
 text-align:center;
 }
 
+/* ================= MONEY ================= */
+
+#moneyUI,#bestUI{
+position:fixed;
+left:50%;
+transform:translateX(-50%);
+z-index:10;
+}
+
+#moneyUI{top:10px;font-size:22px;}
+#bestUI{top:40px;font-size:16px;color:gold;}
+
 /* ================= TITLE ================= */
 
 #title{
@@ -24,47 +36,21 @@ margin-top:60px;
 text-shadow:0 0 20px #00ffff,0 0 40px #ff00ff;
 }
 
-/* ================= MONEY ================= */
-
-#moneyUI,#bestUI{
-position:fixed;
-left:50%;
-transform:translateX(-50%);
-}
-
-#moneyUI{top:10px;font-size:22px;}
-#bestUI{top:40px;font-size:16px;color:gold;}
-
-/* ================= LAYOUT ================= */
-
-#layout{
-display:flex;
-height:100vh;
-}
-
-/* LEFT */
-
-#left{
-width:200px;
-display:flex;
-flex-direction:column;
-justify-content:center;
-gap:10px;
-}
-
-/* SCREEN */
+/* ================= SCREEN (FULL PAGE SYSTEM) ================= */
 
 .screen{
 display:none;
+position:fixed;
+inset:0;
 flex-direction:column;
 align-items:center;
 justify-content:center;
-height:100vh;
+background:#000;
 }
 
 .active{display:flex;}
 
-/* CARD */
+/* ================= CARD ================= */
 
 .card{
 padding:10px;
@@ -74,32 +60,25 @@ cursor:pointer;
 box-shadow:0 0 10px #00ffff;
 }
 
-/* SLOT */
+/* ================= GOLD ================= */
+
+#gold{
+font-size:100px;
+cursor:pointer;
+user-select:none;
+transition:0.1s;
+}
+
+.shrink{transform:scale(0.7);}
+
+/* ================= SLOT ================= */
 
 #slotBox{
 font-size:70px;
 margin:20px;
 }
 
-/* GOLD */
-
-#gold{
-font-size:90px;
-cursor:pointer;
-user-select:none;
-transition:0.1s;
-}
-
-/* CLICK ANIMATION */
-
-.shrink{
-transform:scale(0.7);
-}
-
-.small{
-font-size:14px;
-color:gray;
-}
+.small{font-size:14px;color:gray;}
 
 </style>
 </head>
@@ -111,85 +90,55 @@ color:gray;
 
 <div id="title">NEON CASINO X (BETA)</div>
 
-<div id="layout">
+<!-- ================= MENU ================= -->
+<div id="menu" class="screen active">
 
-<!-- LEFT -->
-<div id="left">
-
-<div class="card" onclick="go('shop')">SHOP</div>
-<div class="card" onclick="go('inv')">INVENTORY</div>
-
-<!-- ❌ MINI 삭제 → ✔ GOLD MINE -->
-<div class="card" onclick="go('mine')">GO TO GOLD MINE</div>
-
-</div>
-
-<!-- WELCOME -->
-<div id="welcome" class="screen active">
-<div class="card" onclick="go('mode')">CHOOSE GAME MODE</div>
-</div>
-
-<!-- MODE -->
-<div id="mode" class="screen">
 <div class="card" onclick="go('slot')">SLOT</div>
 <div class="card" onclick="go('coin')">COIN</div>
 <div class="card" onclick="go('bet')">BET</div>
-<div class="card" onclick="go('mine')">GO TO GOLD MINE</div>
-<div class="card" onclick="go('welcome')">BACK</div>
+<div class="card" onclick="go('mine')">GOLD MINE</div>
+
 </div>
 
-<!-- SLOT -->
+<!-- ================= SLOT ================= -->
 <div id="slot" class="screen">
+
 <div id="slotBox">❓❓❓</div>
 <div class="card" onclick="spin()">SPIN</div>
 <div class="small" id="slotFail"></div>
-<div class="card" onclick="go('mode')">BACK</div>
+<div class="card" onclick="go('menu')">BACK</div>
+
 </div>
 
-<!-- COIN -->
+<!-- ================= COIN ================= -->
 <div id="coin" class="screen">
+
 <div id="coinBox">❓</div>
 <div class="card" onclick="coin('HEAD')">HEAD</div>
 <div class="card" onclick="coin('TAIL')">TAIL</div>
-<div class="card" onclick="go('mode')">BACK</div>
+<div class="card" onclick="go('menu')">BACK</div>
+
 </div>
 
-<!-- BET -->
+<!-- ================= BET ================= -->
 <div id="bet" class="screen">
+
 <input id="betInput">
 <div class="card" onclick="bet()">START</div>
-<div class="card" onclick="go('mode')">BACK</div>
+<div class="card" onclick="go('menu')">BACK</div>
+
 </div>
 
-<!-- SHOP -->
-<div id="shop" class="screen">
-
-<div class="card" onclick="buy('slot')">SLOT ITEM - 30000</div>
-<div class="card" onclick="buy('coin')">COIN ITEM - 30000</div>
-<div class="card" onclick="buy('bet')">BET ITEM - 30000</div>
-
-<div class="card" onclick="go('welcome')">BACK</div>
-</div>
-
-<!-- INVENTORY -->
-<div id="inv" class="screen">
-<div id="invBox">EMPTY</div>
-<div class="card" onclick="equip()">EQUIP</div>
-<div class="card" onclick="go('welcome')">BACK</div>
-</div>
-
-<!-- GOLD MINE -->
+<!-- ================= GOLD MINE (FULL SCREEN GAME) ================= -->
 <div id="mine" class="screen">
 
 <h2>⛏️ GOLD MINE</h2>
 
 <div id="gold">🪙</div>
 
-<div id="mineText">CLICK GOLD</div>
+<div id="mineText">CLICK AND MINE</div>
 
-<div class="card" onclick="go('welcome')">BACK</div>
-
-</div>
+<div class="card" onclick="go('menu')">EXIT</div>
 
 </div>
 
@@ -199,22 +148,8 @@ color:gray;
 
 const State={
 money:50000,
-best:50000,
-inv:[],
-selected:null,
-equip:{slot:false,coin:false,bet:false}
+best:50000
 };
-
-/* ================= SAVE ================= */
-
-function save(){
-localStorage.setItem("NEON",JSON.stringify(State));
-}
-
-function load(){
-let d=localStorage.getItem("NEON");
-if(d)Object.assign(State,JSON.parse(d));
-}
 
 /* ================= UI ================= */
 
@@ -240,12 +175,7 @@ render();
 function render(){
 moneyUI.innerText="💰 "+State.money;
 bestUI.innerText="🏆 "+State.best;
-invBox.innerText=State.inv.join(", ")||"EMPTY";
-save();
 }
-
-load();
-render();
 
 /* ================= SLOT ================= */
 
@@ -308,41 +238,60 @@ sub(v);
 setTimeout(()=>Math.random()<0.5?add(v*2):0,500);
 }
 
-/* ================= SHOP ================= */
-
-function buy(x){
-if(State.money<30000)return;
-sub(30000);
-State.inv.push(x);
-render();
-}
-
-/* ================= INVENTORY ================= */
-
-function equip(){
-State.selected=State.inv[State.inv.length-1];
-save();
-}
-
 /* ================= GOLD MINE ================= */
 
 const gold=document.getElementById("gold");
 
-gold.onclick=()=>{
-if(State.money<=0) return;
+let mining=false;
+let mineTimer=null;
+let cooldown=false;
 
-/* 클릭 애니메이션 */
-gold.classList.add("shrink");
+gold.onmousedown=()=>{
 
-setTimeout(()=>{
-gold.classList.remove("shrink");
-},100);
+if(cooldown) return;
 
-/* 돈 지급 */
+mining=true;
+mineText.innerText="MINING...";
+
+let t=0;
+
+mineTimer=setInterval(()=>{
+
+if(!mining){
+clearInterval(mineTimer);
+return;
+}
+
 add(10);
 
-mineText.innerText="MINING +10";
+t++;
+
+if(t>=1000){
+stopMine();
+}
+
+},10);
+
 };
+
+function stopMine(){
+
+mining=false;
+clearInterval(mineTimer);
+
+mineText.innerText="COOLDOWN";
+
+cooldown=true;
+
+setTimeout(()=>{
+cooldown=false;
+mineText.innerText="READY";
+},5000);
+
+}
+
+gold.onmouseup=stopMine;
+gold.onmouseleave=stopMine;
 
 </script>
 
