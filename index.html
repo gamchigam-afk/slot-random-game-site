@@ -16,7 +16,7 @@ overflow:hidden;
 text-align:center;
 }
 
-/* ================= TITLE CENTER ================= */
+/* ================= TITLE ================= */
 
 #title{
 font-size:60px;
@@ -52,7 +52,7 @@ justify-content:center;
 gap:10px;
 }
 
-/* CENTER */
+/* SCREEN */
 
 .screen{
 display:none;
@@ -81,6 +81,21 @@ font-size:70px;
 margin:20px;
 }
 
+/* GOLD */
+
+#gold{
+font-size:90px;
+cursor:pointer;
+user-select:none;
+transition:0.1s;
+}
+
+/* CLICK ANIMATION */
+
+.shrink{
+transform:scale(0.7);
+}
+
 .small{
 font-size:14px;
 color:gray;
@@ -103,7 +118,9 @@ color:gray;
 
 <div class="card" onclick="go('shop')">SHOP</div>
 <div class="card" onclick="go('inv')">INVENTORY</div>
-<div class="card" onclick="go('mini')">MINI GAME</div>
+
+<!-- ❌ MINI 삭제 → ✔ GOLD MINE -->
+<div class="card" onclick="go('mine')">GO TO GOLD MINE</div>
 
 </div>
 
@@ -114,9 +131,10 @@ color:gray;
 
 <!-- MODE -->
 <div id="mode" class="screen">
-<div class="card" onclick="lock('slot')">SLOT</div>
-<div class="card" onclick="lock('coin')">COIN</div>
-<div class="card" onclick="lock('bet')">BET</div>
+<div class="card" onclick="go('slot')">SLOT</div>
+<div class="card" onclick="go('coin')">COIN</div>
+<div class="card" onclick="go('bet')">BET</div>
+<div class="card" onclick="go('mine')">GO TO GOLD MINE</div>
 <div class="card" onclick="go('welcome')">BACK</div>
 </div>
 
@@ -156,15 +174,18 @@ color:gray;
 <!-- INVENTORY -->
 <div id="inv" class="screen">
 <div id="invBox">EMPTY</div>
-<div class="card" onclick="equip()">EQUIP SELECTED</div>
+<div class="card" onclick="equip()">EQUIP</div>
 <div class="card" onclick="go('welcome')">BACK</div>
 </div>
 
-<!-- MINI -->
-<div id="mini" class="screen">
+<!-- GOLD MINE -->
+<div id="mine" class="screen">
 
-<div class="card" onclick="mini()">REACTION GAME (FREE)</div>
-<div id="miniText">WAIT</div>
+<h2>⛏️ GOLD MINE</h2>
+
+<div id="gold">🪙</div>
+
+<div id="mineText">CLICK GOLD</div>
 
 <div class="card" onclick="go('welcome')">BACK</div>
 
@@ -193,12 +214,6 @@ localStorage.setItem("NEON",JSON.stringify(State));
 function load(){
 let d=localStorage.getItem("NEON");
 if(d)Object.assign(State,JSON.parse(d));
-}
-
-/* ================= MONEY CHECK ================= */
-
-function canPlay(){
-return State.money>0;
 }
 
 /* ================= UI ================= */
@@ -232,19 +247,11 @@ save();
 load();
 render();
 
-/* ================= LOCK SYSTEM ================= */
-
-function lock(screen){
-if(!canPlay()) return;
-go(screen);
-}
-
 /* ================= SLOT ================= */
 
 const sym=["🍒","🍋","🔔","⭐","7️⃣"];
 
 function spin(){
-if(!canPlay()) return;
 
 sub(100);
 
@@ -287,8 +294,6 @@ sub(200);
 /* ================= COIN ================= */
 
 function coin(t){
-if(!canPlay()) return;
-
 let r=Math.random()<0.5?"HEAD":"TAIL";
 coinBox.innerText=r;
 if(r===t)add(200);
@@ -297,53 +302,47 @@ if(r===t)add(200);
 /* ================= BET ================= */
 
 function bet(){
-if(!canPlay()) return;
-
 let v=+betInput.value;
 if(v>State.money)return;
-
 sub(v);
-
-setTimeout(()=>{
-if(Math.random()<0.5)add(v*2);
-},500);
+setTimeout(()=>Math.random()<0.5?add(v*2):0,500);
 }
 
 /* ================= SHOP ================= */
 
 function buy(x){
 if(State.money<30000)return;
-
 sub(30000);
 State.inv.push(x);
 render();
 }
 
-/* ================= INVENTORY EQUIP ================= */
+/* ================= INVENTORY ================= */
 
 function equip(){
 State.selected=State.inv[State.inv.length-1];
-
-if(State.selected==="slot")State.equip.slot=true;
-if(State.selected==="coin")State.equip.coin=true;
-if(State.selected==="bet")State.equip.bet=true;
-
 save();
 }
 
-/* ================= MINI (FREE) ================= */
+/* ================= GOLD MINE ================= */
 
-function mini(){
-miniText.innerText="CLICK!";
+const gold=document.getElementById("gold");
+
+gold.onclick=()=>{
+if(State.money<=0) return;
+
+/* 클릭 애니메이션 */
+gold.classList.add("shrink");
+
 setTimeout(()=>{
-if(Math.random()<0.5){
-add(100);
-miniText.innerText="WIN";
-}else{
-miniText.innerText="FAIL";
-}
-},500);
-}
+gold.classList.remove("shrink");
+},100);
+
+/* 돈 지급 */
+add(10);
+
+mineText.innerText="MINING +10";
+};
 
 </script>
 
