@@ -7,22 +7,47 @@
 
 <style>
 
+/* ================= BASE ================= */
+
 body{
 margin:0;
 background:#000;
 color:#00ffff;
 font-family:Arial;
-height:100vh;
 overflow:hidden;
 text-shadow:0 0 10px #00ffff;
+}
+
+/* ================= WINDOW SYSTEM ================= */
+
+.window{
+position:absolute;
+width:100%;
+height:100vh;
+top:0;
+left:0;
+
+opacity:0;
+transform:scale(0.95);
+pointer-events:none;
+
+transition:0.35s ease;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+}
+
+.window.active{
+opacity:1;
+transform:scale(1);
+pointer-events:auto;
 }
 
 /* ================= TITLE ================= */
 
 .title{
-text-align:center;
 font-size:60px;
-margin-top:60px;
 animation:blink 1.5s infinite;
 }
 
@@ -36,9 +61,7 @@ margin-left:8px;
 50%{opacity:0.4;}
 }
 
-/* ================= UI ================= */
-
-.screen{display:none;}
+/* ================= BUTTON ================= */
 
 .card{
 padding:10px 15px;
@@ -48,12 +71,12 @@ cursor:pointer;
 box-shadow:0 0 10px #00ffff;
 transition:.2s;
 }
+
 .card:hover{
 transform:scale(1.05);
-box-shadow:0 0 20px #00ffff;
 }
 
-/* ================= SIDE ================= */
+/* ================= SIDE MENU ================= */
 
 .side{
 position:fixed;
@@ -65,81 +88,51 @@ flex-direction:column;
 gap:10px;
 }
 
-/* ================= MODE ================= */
-
-.modeCard{
-width:260px;
-padding:15px;
-border:2px solid #00ffff;
-margin:10px;
-text-align:center;
-box-shadow:0 0 20px #00ffff;
-}
-
-/* ================= MINI ================= */
-
-#miniText{
-font-size:28px;
-margin:20px;
-}
-
 </style>
 </head>
 
 <body>
 
+<!-- ================= SIDE BUTTONS (ALL WINDOWS) ================= -->
+
+<div class="side">
+
+<div class="card" onclick="UI.go('shop')">🏪 SHOP</div>
+<div class="card" onclick="UI.go('inventory')">🎒 INVENTORY</div>
+<div class="card" onclick="UI.go('mini')">🎮 MINI GAME</div>
+<div class="card" onclick="UI.go('mode')">🎰 MODE</div>
+
+</div>
+
+<!-- ================= WELCOME ================= -->
+
+<div class="window active" id="welcome">
+
 <div class="title">
 NEON CASINO X <span class="beta">BETA</span>
 </div>
 
-<div id="moneyUI">💰 1000</div>
-<div id="bestUI">🏆 1000</div>
-
-<!-- SIDE MENU -->
-<div class="side">
-<div class="card" onclick="UI.go('shop')">🏪 SHOP</div>
-<div class="card" onclick="UI.go('inventory')">🎒 INVENTORY</div>
-<div class="card" onclick="UI.go('mini')">🎮 MINI GAME</div>
+<div class="card" onclick="UI.go('mode')">
+START GAME
 </div>
-
-<!-- WELCOME -->
-<div id="welcome" class="screen" style="display:flex;flex-direction:column;align-items:center;">
-
-  <div class="card" onclick="UI.go('mode')">
-    CHOOSE GAME MODE
-  </div>
 
 </div>
 
-<!-- MODE -->
-<div id="mode" class="screen">
+<!-- ================= MODE ================= -->
 
-  <div class="modeCard">
-    🎰 SLOT GAME
-    <button onclick="UI.go('slot')">START</button>
-  </div>
+<div class="window" id="mode">
 
-  <div class="modeCard">
-    🪙 COIN FLIP
-    <button onclick="UI.go('coin')">START</button>
-  </div>
+<div class="card" onclick="UI.go('slot')">SLOT GAME</div>
+<div class="card" onclick="UI.go('coin')">COIN GAME</div>
+<div class="card" onclick="UI.go('bet')">BET GAME</div>
 
-  <div class="modeCard">
-    💰 BET GAME
-    <button onclick="UI.go('bet')">START</button>
-  </div>
-
-  <div class="modeCard">
-    🎮 REACTION GAME
-    <button onclick="UI.go('mini')">START</button>
-  </div>
-
-  <div class="card" onclick="UI.go('welcome')">BACK</div>
+<div class="card" onclick="UI.go('welcome')">BACK</div>
 
 </div>
 
-<!-- SLOT -->
-<div id="slot" class="screen">
+<!-- ================= SLOT ================= -->
+
+<div class="window" id="slot">
 
 <h2>SLOT MACHINE</h2>
 <div id="slotBox">❓❓❓</div>
@@ -149,8 +142,9 @@ NEON CASINO X <span class="beta">BETA</span>
 
 </div>
 
-<!-- COIN -->
-<div id="coin" class="screen">
+<!-- ================= COIN ================= -->
+
+<div class="window" id="coin">
 
 <h2>COIN FLIP</h2>
 <div id="coinBox">❓</div>
@@ -162,11 +156,11 @@ NEON CASINO X <span class="beta">BETA</span>
 
 </div>
 
-<!-- BET -->
-<div id="bet" class="screen">
+<!-- ================= BET ================= -->
+
+<div class="window" id="bet">
 
 <h2>BET GAME</h2>
-
 <input id="betInput">
 
 <div class="card" onclick="bet()">START</div>
@@ -174,8 +168,11 @@ NEON CASINO X <span class="beta">BETA</span>
 
 </div>
 
-<!-- SHOP -->
-<div id="shop" class="screen">
+<!-- ================= SHOP ================= -->
+
+<div class="window" id="shop">
+
+<h2>SHOP</h2>
 
 <div class="card">SLOT BOOST</div>
 <div class="card">COIN BOOST</div>
@@ -185,16 +182,21 @@ NEON CASINO X <span class="beta">BETA</span>
 
 </div>
 
-<!-- INVENTORY -->
-<div id="inventory" class="screen">
+<!-- ================= INVENTORY ================= -->
+
+<div class="window" id="inventory">
+
+<h2>INVENTORY</h2>
 
 <div>EMPTY</div>
+
 <div class="card" onclick="UI.go('welcome')">BACK</div>
 
 </div>
 
-<!-- MINI GAME -->
-<div id="mini" class="screen">
+<!-- ================= MINI GAME ================= -->
+
+<div class="window" id="mini">
 
 <h2>REACTION GAME</h2>
 
@@ -203,116 +205,74 @@ NEON CASINO X <span class="beta">BETA</span>
 <div class="card" onclick="miniClick()">CLICK</div>
 <div class="card" onclick="miniReset()">RESET</div>
 
-<div class="card" onclick="UI.go('mode')">BACK</div>
+<div class="card" onclick="UI.go('welcome')">BACK</div>
 
 </div>
 
+<!-- ================= JS ================= -->
+
 <script>
-
-/* ================= SAVE ================= */
-
-const State = JSON.parse(localStorage.getItem("casino_v5")) || {
-money:1000,
-best:1000
-};
-
-function save(){
-localStorage.setItem("casino_v5",JSON.stringify(State));
-}
 
 /* ================= UI ================= */
 
 const UI={
+current:"welcome",
+
 go(id){
-document.querySelectorAll(".screen").forEach(s=>s.style.display="none");
-document.getElementById(id).style.display="flex";
+
+document.getElementById(this.current)
+.classList.remove("active");
+
+document.getElementById(id)
+.classList.add("active");
+
+this.current=id;
+
 }
 };
-
-/* ================= MONEY ================= */
-
-function add(v){
-State.money+=v;
-if(State.money>State.best) State.best=State.money;
-render();
-}
-
-function sub(v){
-State.money-=v;
-if(State.money<0) State.money=0;
-render();
-}
-
-function render(){
-document.getElementById("moneyUI").innerText="💰 "+State.money;
-document.getElementById("bestUI").innerText="🏆 "+State.best;
-save();
-}
-
-render();
 
 /* ================= SLOT ================= */
 
 function spin(){
-sub(100);
 document.getElementById("slotBox").innerText="SPIN...";
 setTimeout(()=>{
-if(Math.random()<0.3){
-add(500);
-document.getElementById("slotBox").innerText="WIN";
-}else{
-document.getElementById("slotBox").innerText="LOSE";
-}
-},900);
+document.getElementById("slotBox").innerText=
+Math.random()<0.3?"WIN":"LOSE";
+},800);
 }
 
 /* ================= COIN ================= */
 
-function coin(type){
-sub(50);
+function coin(t){
 let r=Math.random()<0.5?"HEAD":"TAIL";
 document.getElementById("coinBox").innerText=r;
-
-if(r===type){
-add(100);
-}
 }
 
 /* ================= BET ================= */
 
 function bet(){
-let v=Number(document.getElementById("betInput").value);
-if(!v||v>State.money) return;
-
-sub(v);
-
-setTimeout(()=>{
-if(Math.random()<0.5){
-add(v*2);
-}else{
-sub(0);
-}
-},500);
+let v=document.getElementById("betInput").value;
+alert("BET: "+v);
 }
 
 /* ================= MINI GAME ================= */
 
-let miniState=0;
+let mini=0;
 
 function miniStart(){
-miniState=1;
+mini=1;
 document.getElementById("miniText").innerText="지금!";
 setTimeout(()=>{
-if(miniState===1){
-miniState=2;
+if(mini===1){
 document.getElementById("miniText").innerText="실패";
+mini=0;
 }
 },2000);
 }
 
 function miniClick(){
 
-if(miniState===0){
+if(mini===0){
 document.getElementById("miniText").innerText="실격!";
 return;
 }
@@ -320,22 +280,19 @@ return;
 let t=Date.now()%1000;
 
 if(t<300){
-add(50);
 document.getElementById("miniText").innerText="50원!";
 }
 else if(t<500){
-add(25);
 document.getElementById("miniText").innerText="25원!";
 }
 else{
 document.getElementById("miniText").innerText="실패";
 }
 
-miniState=0;
+mini=0;
 }
 
 function miniReset(){
-miniState=0;
 document.getElementById("miniText").innerText="WAIT...";
 setTimeout(miniStart,800);
 }
