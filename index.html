@@ -7,8 +7,6 @@
 
 <style>
 
-/* ================= BASE ================= */
-
 body{
 margin:0;
 background:radial-gradient(circle,#120c00,#000);
@@ -17,14 +15,13 @@ font-family:Arial;
 overflow:hidden;
 }
 
-/* ================= HUD (FIXED RIGHT TOP) ================= */
+/* ================= HUD ================= */
 
 #hud{
 position:fixed;
 top:10px;
 right:10px;
 text-align:right;
-font-size:14px;
 z-index:1000;
 }
 
@@ -34,11 +31,10 @@ text-shadow:0 0 10px #ffd700;
 }
 
 #log{
-margin-top:8px;
 font-size:12px;
 color:#ffdd88;
-height:40px;
-overflow:hidden;
+margin-top:5px;
+height:30px;
 }
 
 /* ================= LEFT MENU ================= */
@@ -60,12 +56,11 @@ border:1px solid #ffd700;
 background:rgba(0,0,0,0.4);
 cursor:pointer;
 box-shadow:0 0 10px #ffcc00;
-text-align:center;
 transition:0.2s;
 }
 .btn:hover{transform:scale(1.05);}
 
-/* ================= CENTER SCREEN ================= */
+/* ================= SCREENS ================= */
 
 .screen{
 position:fixed;
@@ -85,13 +80,6 @@ font-size:60px;
 text-shadow:0 0 20px #ffd700;
 }
 
-#sub{
-font-size:18px;
-margin-top:10px;
-}
-
-/* ================= CARDS ================= */
-
 .card{
 padding:12px;
 margin:8px;
@@ -106,7 +94,12 @@ cursor:pointer;
 font-size:100px;
 cursor:pointer;
 user-select:none;
-transition:0.1s;
+}
+
+/* ================= SLOT ================= */
+
+#slotBox{
+font-size:60px;
 }
 
 </style>
@@ -114,28 +107,27 @@ transition:0.1s;
 
 <body>
 
-<!-- ================= HUD ================= -->
+<!-- HUD -->
 <div id="hud">
 <div id="money">💰 50000</div>
 <div id="best">🏆 50000</div>
 <div id="log"></div>
 </div>
 
-<!-- ================= LEFT ================= -->
+<!-- LEFT -->
 <div id="left">
 <div class="btn" onclick="go('mine')">⛏ GOLD</div>
 <div class="btn" onclick="go('inv')">🎒 INV</div>
 <div class="btn" onclick="go('shop')">🛒 SHOP</div>
 </div>
 
-<!-- ================= MENU ================= -->
+<!-- MENU -->
 <div id="menu" class="screen active">
 <div id="title">NEON CASINO X</div>
-<div id="sub">MODE SELECT</div>
 <div class="card" onclick="go('choose')">START</div>
 </div>
 
-<!-- ================= CHOOSE ================= -->
+<!-- CHOOSE -->
 <div id="choose" class="screen">
 <div class="card" onclick="go('slot')">SLOT</div>
 <div class="card" onclick="go('coin')">COIN</div>
@@ -144,41 +136,32 @@ transition:0.1s;
 <div class="card" onclick="go('menu')">BACK</div>
 </div>
 
-<!-- ================= SLOT ================= -->
+<!-- SLOT -->
 <div id="slot" class="screen">
-<div class="card" onclick="spin()" id="slotBox">SPIN</div>
+<div id="slotBox">SPIN</div>
+<div class="card" onclick="spin()">SPIN</div>
 <div class="card" onclick="go('choose')">BACK</div>
 </div>
 
-<!-- ================= COIN ================= -->
+<!-- COIN -->
 <div id="coin" class="screen">
-<div class="card" onclick="coin('HEAD')" id="coinBox">HEAD</div>
+<div id="coinBox">🪙</div>
+<div class="card" onclick="coin('HEAD')">HEAD</div>
 <div class="card" onclick="coin('TAIL')">TAIL</div>
 <div class="card" onclick="go('choose')">BACK</div>
 </div>
 
-<!-- ================= BET ================= -->
+<!-- BET -->
 <div id="bet" class="screen">
-<input id="betInput">
+<input id="betInput" placeholder="NUMBER ONLY">
 <div class="card" onclick="bet()">START</div>
 <div class="card" onclick="go('choose')">BACK</div>
 </div>
 
-<!-- ================= SHOP ================= -->
-<div id="shop" class="screen">
-<div class="card">SHOP READY</div>
-<div class="card" onclick="go('menu')">BACK</div>
-</div>
-
-<!-- ================= INVENTORY ================= -->
-<div id="inv" class="screen">
-<div class="card">INVENTORY READY</div>
-<div class="card" onclick="go('menu')">BACK</div>
-</div>
-
-<!-- ================= GOLD MINE ================= -->
+<!-- GOLD MINE -->
 <div id="mine" class="screen">
 <div id="gold">🪙</div>
+<div id="mineText">HOLD 10s</div>
 <div class="card" onclick="go('choose')">EXIT</div>
 </div>
 
@@ -202,12 +185,11 @@ const d=localStorage.getItem("NEON");
 if(d)Object.assign(State,JSON.parse(d));
 }
 
-/* ================= HUD LOG ================= */
+/* ================= LOG ================= */
 
 function log(t){
-const l=document.getElementById("log");
-l.innerText=t;
-setTimeout(()=>l.innerText="",1500);
+document.getElementById("log").innerText=t;
+setTimeout(()=>document.getElementById("log").innerText="",1200);
 }
 
 /* ================= MONEY ================= */
@@ -241,7 +223,7 @@ document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
 document.getElementById(id).classList.add("active");
 }
 
-/* ================= SLOT (450:1) ================= */
+/* ================= SLOT (1/450) ================= */
 
 function spin(){
 sub(100);
@@ -250,7 +232,7 @@ let i=0;
 
 let inter=setInterval(()=>{
 
-document.getElementById("slotBox").innerText=
+slotBox.innerText=
 ["🍒","🍋","⭐","7️⃣"][Math.floor(Math.random()*4)]+" "
 +["🍒","🍋","⭐","7️⃣"][Math.floor(Math.random()*4)]+" "
 +["🍒","🍋","⭐","7️⃣"][Math.floor(Math.random()*4)];
@@ -262,53 +244,88 @@ clearInterval(inter);
 
 let win=Math.random()<1/450;
 
-if(win){
-add(1000);
-}else{
-sub(200);
-}
-
+if(win) add(1000);
+else sub(200);
 }
 
 },70);
 }
 
-/* ================= COIN ================= */
+/* ================= COIN (100 cost / 200 win) ================= */
 
 function coin(t){
+
+if(State.money<100) return;
+sub(100);
+
+let box=document.getElementById("coinBox");
+
+let i=0;
+let anim=setInterval(()=>{
+
+box.innerText=["🪙","🔄","🪙","🔄"][i%4];
+i++;
+
+if(i>10){
+clearInterval(anim);
+
 let r=Math.random()<0.5?"HEAD":"TAIL";
-document.getElementById("coinBox").innerText=r;
-if(r===t)add(200);
+box.innerText=r;
+
+if(r===t) add(200);
 }
 
-/* ================= BET ================= */
+},80);
+}
+
+/* ================= BET (numbers only) ================= */
 
 function bet(){
-let v=+betInput.value;
-if(v>State.money)return;
+
+let input=document.getElementById("betInput");
+input.value=input.value.replace(/[^0-9]/g,'');
+
+let v=+input.value;
+
+if(!v || v>State.money) return;
+
 sub(v);
-setTimeout(()=>Math.random()<0.5?add(v*2):0,500);
+
+setTimeout(()=>{
+if(Math.random()<0.5) add(v*2);
+},500);
 }
 
-/* ================= GOLD MINE ================= */
+/* ================= GOLD MINE (10s hold) ================= */
 
 let hold=false;
 let time=0;
+let timer=null;
 
-document.getElementById("gold").onmousedown=()=>{
+const gold=document.getElementById("gold");
+const mineText=document.getElementById("mineText");
+
+gold.onmousedown=()=>{
 
 hold=true;
 time=0;
 
-let timer=setInterval(()=>{
+timer=setInterval(()=>{
 
-if(!hold){clearInterval(timer);return;}
+if(!hold){
+clearInterval(timer);
+mineText.innerText="FAILED";
+return;
+}
 
 time++;
+
+mineText.innerText=`MINING ${(1000-time)/100}s`;
 
 if(time>=1000){
 clearInterval(timer);
 add(10);
+mineText.innerText="SUCCESS +10";
 hold=false;
 }
 
@@ -316,8 +333,8 @@ hold=false;
 
 };
 
-document.getElementById("gold").onmouseup=()=>hold=false;
-document.getElementById("gold").onmouseleave=()=>hold=false;
+gold.onmouseup=()=>hold=false;
+gold.onmouseleave=()=>hold=false;
 
 /* ================= INIT ================= */
 
