@@ -7,38 +7,52 @@
 
 <style>
 
-/* ================= BASE ================= */
+/* ================= BACKGROUND (심심하지 않게) ================= */
 
 body{
 margin:0;
-background:#000;
-color:#00ffff;
 font-family:Arial;
+color:#00ffff;
 overflow:hidden;
+background:radial-gradient(circle at center,#050505,#000);
+}
+
+body::before{
+content:"";
+position:fixed;
+inset:0;
+background:
+radial-gradient(circle,#00ffff22 1px,transparent 1px),
+radial-gradient(circle,#ff00ff22 1px,transparent 1px);
+background-size:60px 60px,90px 90px;
+animation:move 12s linear infinite;
+}
+
+@keyframes move{
+0%{transform:translateY(0);}
+100%{transform:translateY(-120px);}
+}
+
+/* ================= TITLE ================= */
+
+#title{
+text-align:center;
+font-size:72px;
+margin-top:40px;
+text-shadow:0 0 20px #00ffff,0 0 40px #ff00ff;
+}
+
+/* ================= MONEY ================= */
+
+#moneyUI,#bestUI{
+position:fixed;
+left:50%;
+transform:translateX(-50%);
 text-shadow:0 0 10px #00ffff;
 }
 
-/* ================= MONEY UI ================= */
-
-#moneyUI{
-position:fixed;
-top:10px;
-left:50%;
-transform:translateX(-50%);
-font-size:24px;
-color:#00ffff;
-z-index:999;
-}
-
-#bestUI{
-position:fixed;
-top:40px;
-left:50%;
-transform:translateX(-50%);
-font-size:18px;
-color:gold;
-z-index:999;
-}
+#moneyUI{top:10px;font-size:24px;}
+#bestUI{top:40px;font-size:18px;color:gold;}
 
 /* ================= LAYOUT ================= */
 
@@ -65,19 +79,13 @@ flex:1;
 display:flex;
 justify-content:center;
 align-items:center;
+flex-direction:column;
 }
 
 /* SCREEN */
 
-.screen{
-display:none;
-flex-direction:column;
-align-items:center;
-}
-
-.active{
-display:flex;
-}
+.screen{display:none;}
+.active{display:flex;flex-direction:column;align-items:center;}
 
 /* CARD */
 
@@ -90,9 +98,7 @@ box-shadow:0 0 10px #00ffff;
 transition:.2s;
 }
 
-.card:hover{
-transform:scale(1.05);
-}
+.card:hover{transform:scale(1.05);}
 
 /* SLOT */
 
@@ -101,34 +107,23 @@ font-size:70px;
 margin:20px;
 }
 
-.spinning{
-animation:shake 0.1s infinite;
-}
-
-@keyframes shake{
-0%{transform:translateY(0);}
-50%{transform:translateY(-5px);}
-100%{transform:translateY(0);}
-}
-
 </style>
 </head>
 
 <body>
 
-<!-- MONEY -->
-<div id="moneyUI">💰 1000</div>
-<div id="bestUI">🏆 1000</div>
+<div id="moneyUI">💰 50000</div>
+<div id="bestUI">🏆 50000</div>
+
+<div id="title">NEON CASINO X</div>
 
 <div id="layout">
 
-<!-- LEFT MENU -->
+<!-- LEFT -->
 <div id="leftMenu">
-
 <div class="card" onclick="UI.go('shop')">🏪 SHOP</div>
-<div class="card" onclick="UI.go('inventory')">🎒 INVENTORY</div>
+<div class="card" onclick="UI.go('inv')">🎒 INVENTORY</div>
 <div class="card" onclick="UI.go('mini')">🎮 MINI</div>
-
 </div>
 
 <!-- CENTER -->
@@ -136,94 +131,51 @@ animation:shake 0.1s infinite;
 
 <!-- WELCOME -->
 <div id="welcome" class="screen active">
-
-<h1>NEON CASINO X</h1>
-
-<div class="card" onclick="UI.go('mode')">
-CHOOSE GAME MODE
-</div>
-
+<div class="card" onclick="UI.go('mode')">CHOOSE GAME MODE</div>
 </div>
 
 <!-- MODE -->
 <div id="mode" class="screen">
-
 <div class="card" onclick="UI.go('slot')">SLOT</div>
 <div class="card" onclick="UI.go('coin')">COIN</div>
 <div class="card" onclick="UI.go('bet')">BET</div>
-
 <div class="card" onclick="UI.go('welcome')">BACK</div>
-
 </div>
 
 <!-- SLOT -->
 <div id="slot" class="screen">
-
-<h2>SLOT MACHINE</h2>
 <div id="slotBox">❓❓❓</div>
-
 <div class="card" onclick="spin()">SPIN</div>
 <div class="card" onclick="UI.go('mode')">BACK</div>
-
 </div>
 
 <!-- COIN -->
 <div id="coin" class="screen">
-
-<h2>COIN FLIP</h2>
 <div id="coinBox">❓</div>
-
 <div class="card" onclick="coin('HEAD')">HEAD</div>
 <div class="card" onclick="coin('TAIL')">TAIL</div>
-
 <div class="card" onclick="UI.go('mode')">BACK</div>
-
 </div>
 
 <!-- BET -->
 <div id="bet" class="screen">
-
-<h2>BET</h2>
 <input id="betInput">
-
 <div class="card" onclick="bet()">START</div>
 <div class="card" onclick="UI.go('mode')">BACK</div>
-
 </div>
 
 <!-- SHOP -->
 <div id="shop" class="screen">
-
-<h2>SHOP</h2>
-
-<div class="card" onclick="buy('slot')">🎰 SLOT BOOST (2000)</div>
-<div class="card" onclick="buy('coin')">🪙 COIN BOOST (2000)</div>
-<div class="card" onclick="buy('bet')">💰 BET BOOST (2000)</div>
-
+<div class="card" onclick="buy('slot')">Slot Boost</div>
+<div class="card" onclick="buy('coin')">Coin Boost</div>
+<div class="card" onclick="buy('bet')">Bet Boost</div>
 <div class="card" onclick="UI.go('welcome')">BACK</div>
-
 </div>
 
 <!-- INVENTORY -->
-<div id="inventory" class="screen">
-
-<h2>INVENTORY</h2>
+<div id="inv" class="screen">
 <div id="invBox">EMPTY</div>
-
 <div class="card" onclick="UI.go('welcome')">BACK</div>
-
-</div>
-
-<!-- MINI -->
-<div id="mini" class="screen">
-
-<h2>MINI GAME</h2>
-<div id="miniText">WAIT...</div>
-
-<div class="card" onclick="miniClick()">CLICK</div>
-
-<div class="card" onclick="UI.go('welcome')">BACK</div>
-
 </div>
 
 </div>
@@ -234,46 +186,36 @@ CHOOSE GAME MODE
 /* ================= STATE ================= */
 
 const State={
-money:1000,
-best:1000,
+money:50000,
+best:50000,
 inv:[],
-equip:{
-slot:false,
-coin:false,
-bet:false
-}
+equip:{slot:false,coin:false,bet:false}
 };
 
 /* ================= LOAD ================= */
 
 function load(){
-const data=localStorage.getItem("casino_save");
-if(!data) return;
-
-const s=JSON.parse(data);
-
-Object.assign(State,s);
+let d=localStorage.getItem("NEON");
+if(d) Object.assign(State,JSON.parse(d));
 }
 
 /* ================= SAVE ================= */
 
 function save(){
-localStorage.setItem("casino_save",JSON.stringify(State));
+localStorage.setItem("NEON",JSON.stringify(State));
 }
 
-/* ================= RENDER ================= */
+/* ================= MONEY ================= */
 
 function render(){
 document.getElementById("moneyUI").innerText="💰 "+State.money;
 document.getElementById("bestUI").innerText="🏆 "+State.best;
-document.getElementById("invBox").innerText=State.inv.join(", ") || "EMPTY";
+document.getElementById("invBox").innerText=State.inv.join(", ")||"EMPTY";
 save();
 }
 
 load();
 render();
-
-/* ================= MONEY ================= */
 
 function add(v){
 State.money+=v;
@@ -300,50 +242,41 @@ this.current=id;
 
 /* ================= SLOT ================= */
 
-const symbols=["🍒","🍋","🔔","⭐","7️⃣"];
+const sym=["🍒","🍋","🔔","⭐","7️⃣"];
 
 function spin(){
 
-const box=document.getElementById("slotBox");
+sub(100);
 
-let cost=100;
-if(State.equip.slot) cost=50;
+let box=document.getElementById("slotBox");
 
-sub(cost);
-
-box.classList.add("spinning");
-
-let count=0;
-
-let interval=setInterval(()=>{
+let i=0;
+let inter=setInterval(()=>{
 
 box.innerText=
-symbols[Math.floor(Math.random()*symbols.length)]+" "
-+symbols[Math.floor(Math.random()*symbols.length)]+" "
-+symbols[Math.floor(Math.random()*symbols.length)];
+sym[Math.floor(Math.random()*5)]+" "
++sym[Math.floor(Math.random()*5)]+" "
++sym[Math.floor(Math.random()*5)];
 
-count++;
+i++;
 
-if(count>15){
+if(i>15){
+clearInterval(inter);
 
-clearInterval(interval);
-box.classList.remove("spinning");
-
-let a=symbols[Math.floor(Math.random()*symbols.length)];
-let b=symbols[Math.floor(Math.random()*symbols.length)];
-let c=symbols[Math.floor(Math.random()*symbols.length)];
+let a=sym[Math.floor(Math.random()*5)];
+let b=sym[Math.floor(Math.random()*5)];
+let c=sym[Math.floor(Math.random()*5)];
 
 box.innerText=`${a} ${b} ${c}`;
 
-if(a===b && b===c){
-add(State.equip.slot?1000:500);
-box.innerText+=" WIN";
+if(a===b&&b===c){
+add(1000);
 }
-else if(a===b || b===c || a===c){
+else if(a===b||b===c||a===c){
 box.innerText+=" 실격";
 }
 else{
-box.innerText+=" LOSE";
+sub(200);
 }
 
 }
@@ -355,53 +288,32 @@ box.innerText+=" LOSE";
 /* ================= COIN ================= */
 
 function coin(t){
-
 let r=Math.random()<0.5?"HEAD":"TAIL";
-
 document.getElementById("coinBox").innerText=r;
-
-if(r===t){
-add(State.equip.coin?200:100);
-}
-
+if(r===t) add(200);
 }
 
 /* ================= BET ================= */
 
 function bet(){
-
-let v=Number(document.getElementById("betInput").value);
-
-if(!v||v>State.money) return;
-
+let v=+betInput.value;
+if(v>State.money)return;
 sub(v);
-
-setTimeout(()=>{
-
-if(Math.random()<0.5){
-add(State.equip.bet?v*3:v*2);
+setTimeout(()=>Math.random()<0.5?add(v*2):0,500);
 }
 
-},500);
+/* ================= SHOP ================= */
 
-}
-
-/* ================= SHOP + EFFECT ================= */
-
-function buy(type){
-
-if(State.money<2000) return;
-
+function buy(x){
+if(State.money<2000)return;
 sub(2000);
+State.inv.push(x);
 
-State.inv.push(type);
-
-if(type==="slot") State.equip.slot=true;
-if(type==="coin") State.equip.coin=true;
-if(type==="bet") State.equip.bet=true;
+if(x==="slot")State.equip.slot=true;
+if(x==="coin")State.equip.coin=true;
+if(x==="bet")State.equip.bet=true;
 
 render();
-
 }
 
 </script>
