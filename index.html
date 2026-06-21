@@ -7,6 +7,8 @@
 
 <style>
 
+/* ================= BASE ================= */
+
 body{
 margin:0;
 background:#000;
@@ -18,53 +20,66 @@ text-shadow:0 0 10px #00ffff;
 
 /* ================= MONEY UI ================= */
 
-#ui{
+#moneyUI{
 position:fixed;
 top:10px;
 left:50%;
 transform:translateX(-50%);
-text-align:center;
+font-size:24px;
+color:#00ffff;
 z-index:999;
 }
 
-#moneyUI{
-font-size:24px;
-color:#00ffff;
-}
-
 #bestUI{
+position:fixed;
+top:40px;
+left:50%;
+transform:translateX(-50%);
 font-size:18px;
 color:gold;
+z-index:999;
 }
 
-/* ================= WINDOW ================= */
+/* ================= LAYOUT ================= */
 
-.window{
-position:absolute;
-width:100%;
+#layout{
+display:flex;
 height:100vh;
-top:0;
-left:0;
+}
 
-opacity:0;
-transform:scale(0.95);
-pointer-events:none;
+/* LEFT */
 
-transition:0.35s ease;
-
+#leftMenu{
+width:200px;
 display:flex;
 flex-direction:column;
-align-items:center;
 justify-content:center;
+gap:10px;
+padding-left:10px;
 }
 
-.window.active{
-opacity:1;
-transform:scale(1);
-pointer-events:auto;
+/* CENTER */
+
+#center{
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
 }
 
-/* ================= BUTTON ================= */
+/* SCREEN */
+
+.screen{
+display:none;
+flex-direction:column;
+align-items:center;
+}
+
+.active{
+display:flex;
+}
+
+/* CARD */
 
 .card{
 padding:10px 15px;
@@ -79,10 +94,11 @@ transition:.2s;
 transform:scale(1.05);
 }
 
+/* SLOT */
+
 #slotBox{
 font-size:70px;
 margin:20px;
-letter-spacing:10px;
 }
 
 .spinning{
@@ -100,51 +116,59 @@ animation:shake 0.1s infinite;
 
 <body>
 
-<!-- ================= MONEY UI ================= -->
-
-<div id="ui">
+<!-- MONEY -->
 <div id="moneyUI">💰 1000</div>
 <div id="bestUI">🏆 1000</div>
+
+<div id="layout">
+
+<!-- LEFT MENU -->
+<div id="leftMenu">
+
+<div class="card" onclick="UI.go('shop')">🏪 SHOP</div>
+<div class="card" onclick="UI.go('inventory')">🎒 INVENTORY</div>
+<div class="card" onclick="UI.go('mini')">🎮 MINI</div>
+
 </div>
 
-<!-- ================= WELCOME ================= -->
+<!-- CENTER -->
+<div id="center">
 
-<div class="window active" id="welcome">
+<!-- WELCOME -->
+<div id="welcome" class="screen active">
+
+<h1>NEON CASINO X</h1>
 
 <div class="card" onclick="UI.go('mode')">
-START GAME
+CHOOSE GAME MODE
 </div>
 
 </div>
 
-<!-- ================= MODE ================= -->
+<!-- MODE -->
+<div id="mode" class="screen">
 
-<div class="window" id="mode">
-
-<div class="card" onclick="UI.go('slot')">SLOT GAME</div>
-<div class="card" onclick="UI.go('coin')">COIN GAME</div>
-<div class="card" onclick="UI.go('bet')">BET GAME</div>
+<div class="card" onclick="UI.go('slot')">SLOT</div>
+<div class="card" onclick="UI.go('coin')">COIN</div>
+<div class="card" onclick="UI.go('bet')">BET</div>
 
 <div class="card" onclick="UI.go('welcome')">BACK</div>
 
 </div>
 
-<!-- ================= SLOT ================= -->
-
-<div class="window" id="slot">
+<!-- SLOT -->
+<div id="slot" class="screen">
 
 <h2>SLOT MACHINE</h2>
-
-<div id="slotBox">❓ ❓ ❓</div>
+<div id="slotBox">❓❓❓</div>
 
 <div class="card" onclick="spin()">SPIN</div>
 <div class="card" onclick="UI.go('mode')">BACK</div>
 
 </div>
 
-<!-- ================= COIN ================= -->
-
-<div class="window" id="coin">
+<!-- COIN -->
+<div id="coin" class="screen">
 
 <h2>COIN FLIP</h2>
 <div id="coinBox">❓</div>
@@ -156,16 +180,53 @@ START GAME
 
 </div>
 
-<!-- ================= BET ================= -->
+<!-- BET -->
+<div id="bet" class="screen">
 
-<div class="window" id="bet">
-
-<h2>BET GAME</h2>
+<h2>BET</h2>
 <input id="betInput">
 
 <div class="card" onclick="bet()">START</div>
 <div class="card" onclick="UI.go('mode')">BACK</div>
 
+</div>
+
+<!-- SHOP -->
+<div id="shop" class="screen">
+
+<h2>SHOP</h2>
+
+<div class="card" onclick="buy('slot')">🎰 SLOT BOOST (2000)</div>
+<div class="card" onclick="buy('coin')">🪙 COIN BOOST (2000)</div>
+<div class="card" onclick="buy('bet')">💰 BET BOOST (2000)</div>
+
+<div class="card" onclick="UI.go('welcome')">BACK</div>
+
+</div>
+
+<!-- INVENTORY -->
+<div id="inventory" class="screen">
+
+<h2>INVENTORY</h2>
+<div id="invBox">EMPTY</div>
+
+<div class="card" onclick="UI.go('welcome')">BACK</div>
+
+</div>
+
+<!-- MINI -->
+<div id="mini" class="screen">
+
+<h2>MINI GAME</h2>
+<div id="miniText">WAIT...</div>
+
+<div class="card" onclick="miniClick()">CLICK</div>
+
+<div class="card" onclick="UI.go('welcome')">BACK</div>
+
+</div>
+
+</div>
 </div>
 
 <script>
@@ -174,15 +235,43 @@ START GAME
 
 const State={
 money:1000,
-best:1000
+best:1000,
+inv:[],
+equip:{
+slot:false,
+coin:false,
+bet:false
+}
 };
+
+/* ================= LOAD ================= */
+
+function load(){
+const data=localStorage.getItem("casino_save");
+if(!data) return;
+
+const s=JSON.parse(data);
+
+Object.assign(State,s);
+}
+
+/* ================= SAVE ================= */
+
+function save(){
+localStorage.setItem("casino_save",JSON.stringify(State));
+}
 
 /* ================= RENDER ================= */
 
 function render(){
 document.getElementById("moneyUI").innerText="💰 "+State.money;
 document.getElementById("bestUI").innerText="🏆 "+State.best;
+document.getElementById("invBox").innerText=State.inv.join(", ") || "EMPTY";
+save();
 }
+
+load();
+render();
 
 /* ================= MONEY ================= */
 
@@ -198,8 +287,6 @@ if(State.money<0) State.money=0;
 render();
 }
 
-render();
-
 /* ================= UI ================= */
 
 const UI={
@@ -211,7 +298,7 @@ this.current=id;
 }
 };
 
-/* ================= SLOT (FIXED MOTION) ================= */
+/* ================= SLOT ================= */
 
 const symbols=["🍒","🍋","🔔","⭐","7️⃣"];
 
@@ -219,7 +306,10 @@ function spin(){
 
 const box=document.getElementById("slotBox");
 
-sub(100);
+let cost=100;
+if(State.equip.slot) cost=50;
+
+sub(cost);
 
 box.classList.add("spinning");
 
@@ -234,22 +324,26 @@ symbols[Math.floor(Math.random()*symbols.length)]+" "
 
 count++;
 
-if(count>18){
+if(count>15){
 
 clearInterval(interval);
 box.classList.remove("spinning");
 
-let final=
-symbols[Math.floor(Math.random()*symbols.length)]+" "
-+symbols[Math.floor(Math.random()*symbols.length)]+" "
-+symbols[Math.floor(Math.random()*symbols.length)];
+let a=symbols[Math.floor(Math.random()*symbols.length)];
+let b=symbols[Math.floor(Math.random()*symbols.length)];
+let c=symbols[Math.floor(Math.random()*symbols.length)];
 
-box.innerText=final;
+box.innerText=`${a} ${b} ${c}`;
 
-if(Math.random()<0.3){
-add(500);
-}else{
-sub(0);
+if(a===b && b===c){
+add(State.equip.slot?1000:500);
+box.innerText+=" WIN";
+}
+else if(a===b || b===c || a===c){
+box.innerText+=" 실격";
+}
+else{
+box.innerText+=" LOSE";
 }
 
 }
@@ -261,25 +355,53 @@ sub(0);
 /* ================= COIN ================= */
 
 function coin(t){
+
 let r=Math.random()<0.5?"HEAD":"TAIL";
+
 document.getElementById("coinBox").innerText=r;
 
-if(r===t) add(100);
+if(r===t){
+add(State.equip.coin?200:100);
+}
+
 }
 
 /* ================= BET ================= */
 
 function bet(){
+
 let v=Number(document.getElementById("betInput").value);
+
 if(!v||v>State.money) return;
 
 sub(v);
 
 setTimeout(()=>{
+
 if(Math.random()<0.5){
-add(v*2);
+add(State.equip.bet?v*3:v*2);
 }
-},600);
+
+},500);
+
+}
+
+/* ================= SHOP + EFFECT ================= */
+
+function buy(type){
+
+if(State.money<2000) return;
+
+sub(2000);
+
+State.inv.push(type);
+
+if(type==="slot") State.equip.slot=true;
+if(type==="coin") State.equip.coin=true;
+if(type==="bet") State.equip.bet=true;
+
+render();
+
 }
 
 </script>
