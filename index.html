@@ -6,6 +6,9 @@
 <title>NEON CASINO X</title>
 
 <style>
+
+/* ================= BASE ================= */
+
 body{
 margin:0;
 background:radial-gradient(circle,#111,#000);
@@ -13,35 +16,90 @@ color:#00ffff;
 font-family:Arial;
 height:100vh;
 overflow:hidden;
-display:flex;
-flex-direction:column;
-align-items:center;
-justify-content:center;
 text-shadow:0 0 10px #00ffff;
 }
 
-h1{
-text-shadow:0 0 20px #00ffff,0 0 40px #00ffff;
+/* ================= TITLE ================= */
+
+.titleWrap{
+text-align:center;
+margin-top:80px;
 }
 
-.screen{display:none;}
-.card{
-background:#111;
-border:1px solid #00ffff;
+.title{
+font-size:70px;
+text-shadow:0 0 20px #00ffff,0 0 40px #00ffff;
+animation:blink 1.5s infinite;
+display:inline-block;
+}
+
+.beta{
+font-size:16px;
+margin-left:10px;
 color:#00ffff;
+text-shadow:0 0 10px #00ffff;
+vertical-align:top;
+}
+
+@keyframes blink{
+0%,100%{opacity:1;}
+50%{opacity:0.4;}
+}
+
+/* ================= UI ================= */
+
+.screen{display:none;}
+
+.card{
 padding:10px 15px;
 margin:5px;
+border:1px solid #00ffff;
 cursor:pointer;
-box-shadow:0 0 10px #00ffff;
 transition:.2s;
+box-shadow:0 0 10px #00ffff;
 }
+
 .card:hover{
 transform:scale(1.05);
 box-shadow:0 0 20px #00ffff;
 }
 
+/* ================= SIDE MENU ================= */
+
+.sideMenu{
+position:fixed;
+left:10px;
+top:50%;
+transform:translateY(-50%);
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+/* ================= MODE CARDS ================= */
+
+.modeCard{
+width:260px;
+padding:15px;
+border:2px solid #00ffff;
+margin:10px;
+box-shadow:0 0 20px #00ffff;
+}
+
+.modeCard button{
+margin-top:10px;
+background:#00ffff;
+border:none;
+padding:5px 10px;
+font-weight:bold;
+cursor:pointer;
+}
+
+/* ================= TOP ================= */
+
 #moneyUI,#bestUI{
-margin:5px;
+text-align:center;
+margin-top:10px;
 }
 
 </style>
@@ -49,74 +107,147 @@ margin:5px;
 
 <body>
 
-<h1>NEON CASINO X</h1>
+<!-- ================= TITLE ================= -->
+
+<div class="titleWrap">
+
+  <div class="title">
+    NEON CASINO X
+    <span class="beta">BETA</span>
+  </div>
+
+  <div>CHOOSE GAME MODE</div>
+
+</div>
+
+<!-- ================= TOP UI ================= -->
 
 <div id="moneyUI">💰 1000</div>
 <div id="bestUI">🏆 1000</div>
 
-<!-- SCREENS -->
+<!-- ================= SIDE MENU ================= -->
 
-<div id="welcome" class="screen" style="display:flex;">
-  <div class="card" onclick="UI.go('mode')">START</div>
-</div>
+<div class="sideMenu">
 
-<div id="mode" class="screen">
-  <div class="card" onclick="UI.go('slot')">🎰 SLOT</div>
-  <div class="card" onclick="UI.go('coin')">🪙 COIN</div>
-  <div class="card" onclick="UI.go('bet')">💰 BET</div>
   <div class="card" onclick="UI.go('shop')">🏪 SHOP</div>
-  <div class="card" onclick="UI.go('inventory')">🎒 INV</div>
+  <div class="card" onclick="UI.go('inventory')">🎒 INVENTORY</div>
+
 </div>
+
+<!-- ================= WELCOME ================= -->
+
+<div id="welcome" class="screen" style="display:flex;flex-direction:column;align-items:center;">
+
+  <div class="card" onclick="UI.go('mode')">
+    START GAME
+  </div>
+
+</div>
+
+<!-- ================= MODE ================= -->
+
+<div id="mode" class="screen" style="display:flex;flex-direction:column;align-items:center;">
+
+  <div class="modeCard">
+    🎰 SLOT
+    <p>3줄 슬롯 머신</p>
+    <button onclick="UI.go('slot')">START</button>
+  </div>
+
+  <div class="modeCard">
+    🪙 COIN
+    <p>50% 확률 게임</p>
+    <button onclick="UI.go('coin')">START</button>
+  </div>
+
+  <div class="modeCard">
+    💰 BET
+    <p>배팅 시스템</p>
+    <button onclick="UI.go('bet')">START</button>
+  </div>
+
+</div>
+
+<!-- ================= SLOT ================= -->
 
 <div id="slot" class="screen">
-  <div class="card" onclick="spin()">SPIN</div>
-  <div class="card" onclick="UI.go('mode')">BACK</div>
-  <div id="slotBox">❓❓❓</div>
+
+<div id="slotBox">❓ ❓ ❓</div>
+
+<div class="card" onclick="spin()">SPIN</div>
+<div class="card" onclick="UI.go('mode')">BACK</div>
+
 </div>
+
+<!-- ================= COIN ================= -->
 
 <div id="coin" class="screen">
-  <div class="card" onclick="coinPick('HEAD')">HEAD</div>
-  <div class="card" onclick="coinPick('TAIL')">TAIL</div>
-  <div id="coinBox">❓</div>
-  <div class="card" onclick="UI.go('mode')">BACK</div>
+
+<div id="coinBox">❓</div>
+
+<div class="card" onclick="coin('HEAD')">HEAD</div>
+<div class="card" onclick="coin('TAIL')">TAIL</div>
+
+<div class="card" onclick="UI.go('mode')">BACK</div>
+
 </div>
+
+<!-- ================= BET ================= -->
 
 <div id="bet" class="screen">
-  <input id="betInput" placeholder="BET">
-  <div class="card" onclick="bet()">START</div>
-  <div class="card" onclick="UI.go('mode')">BACK</div>
+
+<input id="betInput" placeholder="BET">
+
+<div class="card" onclick="bet()">START</div>
+<div class="card" onclick="UI.go('mode')">BACK</div>
+
 </div>
+
+<!-- ================= SHOP ================= -->
 
 <div id="shop" class="screen">
-  <div class="card" onclick="buy('slot')">SLOT BOOST (300)</div>
-  <div class="card" onclick="buy('coin')">COIN BOOST (300)</div>
-  <div class="card" onclick="buy('bet')">BET BOOST (300)</div>
-  <div class="card" onclick="UI.go('mode')">BACK</div>
+
+<div class="card" onclick="buy('slot')">SLOT BOOST</div>
+<div class="card" onclick="buy('coin')">COIN BOOST</div>
+<div class="card" onclick="buy('bet')">BET BOOST</div>
+
+<div class="card" onclick="UI.go('mode')">BACK</div>
+
 </div>
+
+<!-- ================= INVENTORY ================= -->
 
 <div id="inventory" class="screen">
-  <div id="invBox">EMPTY</div>
-  <div class="card" onclick="UI.go('mode')">BACK</div>
+
+<div id="invBox">EMPTY</div>
+
+<div class="card" onclick="UI.go('mode')">BACK</div>
+
 </div>
 
-<!-- SOUND -->
-<audio id="winSound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3"></audio>
-<audio id="loseSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
+<!-- ================= SOUND ================= -->
+
+<audio id="win" src="https://www.soundjay.com/buttons/sounds/button-09.mp3"></audio>
+<audio id="lose" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
 
 <script>
 
-/* ================= STATE + LOAD ================= */
+/* ================= LOAD ================= */
 
-const State = JSON.parse(localStorage.getItem("casino")) || {
-  money:1000,
-  best:1000,
-  inv:[]
+const State = JSON.parse(localStorage.getItem("casino_v3")) || {
+money:1000,
+best:1000,
+inv:{
+slot:0,
+coin:0,
+bet:0
+}
 };
 
 /* ================= SAVE ================= */
 
 function save(){
-  localStorage.setItem("casino",JSON.stringify(State));
+localStorage.setItem("casino_v3",JSON.stringify(State));
 }
 
 /* ================= UI ================= */
@@ -130,10 +261,9 @@ document.getElementById(id).style.display="flex";
 
 /* ================= RENDER ================= */
 
-function Render(){
+function render(){
 document.getElementById("moneyUI").innerText="💰 "+State.money;
 document.getElementById("bestUI").innerText="🏆 "+State.best;
-updateInv();
 save();
 }
 
@@ -142,75 +272,64 @@ save();
 function add(v){
 State.money+=v;
 if(State.money>State.best) State.best=State.money;
-Render();
+render();
 }
 
 function sub(v){
 State.money-=v;
 if(State.money<0) State.money=0;
-Render();
+render();
 }
 
-/* ================= SHOP + EFFECT ================= */
+/* ================= BOOST ================= */
 
-function has(item){
-return State.inv.includes(item);
-}
-
-function buy(item){
-const price=300;
-if(State.money<price) return;
-sub(price);
-State.inv.push(item);
-Render();
-}
-
-/* boost */
 function boost(type){
-if(type==="slot") return has("slot")?1.1:1;
-if(type==="coin") return has("coin")?1.1:1;
-if(type==="bet") return has("bet")?1.2:1;
-return 1;
+return 1 + State.inv[type]*0.1;
 }
 
 /* ================= SLOT ================= */
 
 function spin(){
+
 sub(100);
 
 const box=document.getElementById("slotBox");
-const arr=["🍒","🍋","💎","7️⃣"];
+const icons=["🍒","🍋","💎","7️⃣"];
 
 let i=0;
 
 let t=setInterval(()=>{
 
 box.innerText=
-arr[Math.random()*4|0]+" "+
-arr[Math.random()*4|0]+" "+
-arr[Math.random()*4|0];
+icons[Math.random()*4|0]+" "+
+icons[Math.random()*4|0]+" "+
+icons[Math.random()*4|0];
 
 i++;
 
-if(i>20){
+if(i>18){
+
 clearInterval(t);
 
 if(Math.random()<0.3*boost("slot")){
 box.innerText="WIN";
 add(500);
-winSound.play();
+win.play();
 }else{
 box.innerText="LOSE";
-loseSound.play();
+lose.play();
 }
+
 }
 
 },70);
+
 }
 
 /* ================= COIN ================= */
 
-function coinPick(type){
+function coin(type){
+
 sub(50);
 
 const box=document.getElementById("coinBox");
@@ -224,6 +343,7 @@ box.innerText=Math.random()<0.5?"HEAD":"TAIL";
 i++;
 
 if(i>15){
+
 clearInterval(t);
 
 let r=Math.random()<0.5?"HEAD":"TAIL";
@@ -232,19 +352,23 @@ box.innerText=r;
 
 if(r===type && Math.random()<0.5*boost("coin")){
 add(100);
-winSound.play();
+win.play();
 }else{
-loseSound.play();
+lose.play();
 }
+
 }
 
 },80);
+
 }
 
 /* ================= BET ================= */
 
 function bet(){
+
 let v=Number(document.getElementById("betInput").value);
+
 if(!v||v>State.money) return;
 
 sub(v);
@@ -253,24 +377,34 @@ setTimeout(()=>{
 
 if(Math.random()<0.5*boost("bet")){
 add(v*2);
-winSound.play();
+win.play();
 }else{
-loseSound.play();
+lose.play();
 }
 
-},700);
+},600);
+
 }
 
-/* ================= INVENTORY ================= */
+/* ================= SHOP ================= */
 
-function updateInv(){
-document.getElementById("invBox").innerText=
-State.inv.length?State.inv.join(", "):"EMPTY";
+function buy(type){
+
+const price=300;
+
+if(State.money<price) return;
+
+sub(price);
+
+State.inv[type]++;
+
+render();
+
 }
 
 /* INIT */
 
-Render();
+render();
 
 </script>
 
