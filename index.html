@@ -7,14 +7,14 @@
 
 <style>
 
-/* ================= BACKGROUND (심심하지 않게) ================= */
+/* ================= BACKGROUND ================= */
 
 body{
 margin:0;
 font-family:Arial;
+background:#000;
 color:#00ffff;
 overflow:hidden;
-background:radial-gradient(circle at center,#050505,#000);
 }
 
 body::before{
@@ -25,10 +25,11 @@ background:
 radial-gradient(circle,#00ffff22 1px,transparent 1px),
 radial-gradient(circle,#ff00ff22 1px,transparent 1px);
 background-size:60px 60px,90px 90px;
-animation:move 12s linear infinite;
+animation:bgMove 12s linear infinite;
+z-index:0;
 }
 
-@keyframes move{
+@keyframes bgMove{
 0%{transform:translateY(0);}
 100%{transform:translateY(-120px);}
 }
@@ -37,31 +38,35 @@ animation:move 12s linear infinite;
 
 #title{
 text-align:center;
-font-size:72px;
-margin-top:40px;
+font-size:64px;
+margin-top:80px;
 text-shadow:0 0 20px #00ffff,0 0 40px #ff00ff;
+position:relative;
+z-index:5;
 }
 
-/* ================= MONEY ================= */
+/* ================= MONEY UI ================= */
 
 #moneyUI,#bestUI{
 position:fixed;
 left:50%;
 transform:translateX(-50%);
-text-shadow:0 0 10px #00ffff;
+z-index:10;
 }
 
-#moneyUI{top:10px;font-size:24px;}
-#bestUI{top:40px;font-size:18px;color:gold;}
+#moneyUI{top:10px;font-size:22px;}
+#bestUI{top:40px;font-size:16px;color:gold;}
 
 /* ================= LAYOUT ================= */
 
 #layout{
 display:flex;
 height:100vh;
+position:relative;
+z-index:2;
 }
 
-/* LEFT */
+/* ================= LEFT ================= */
 
 #leftMenu{
 width:200px;
@@ -72,22 +77,37 @@ gap:10px;
 padding-left:10px;
 }
 
-/* CENTER */
+/* ================= CENTER ================= */
 
 #center{
 flex:1;
 display:flex;
 justify-content:center;
 align-items:center;
-flex-direction:column;
 }
 
-/* SCREEN */
+/* ================= SCREENS (FIXED) ================= */
 
-.screen{display:none;}
-.active{display:flex;flex-direction:column;align-items:center;}
+.screen{
+position:absolute;
+top:0;
+left:200px;
+right:0;
+bottom:0;
 
-/* CARD */
+display:none;
+flex-direction:column;
+align-items:center;
+justify-content:center;
+
+z-index:3;
+}
+
+.screen.active{
+display:flex;
+}
+
+/* ================= CARD ================= */
 
 .card{
 padding:10px 15px;
@@ -96,11 +116,15 @@ border:1px solid #00ffff;
 cursor:pointer;
 box-shadow:0 0 10px #00ffff;
 transition:.2s;
+user-select:none;
+z-index:10;
 }
 
-.card:hover{transform:scale(1.05);}
+.card:hover{
+transform:scale(1.05);
+}
 
-/* SLOT */
+/* ================= SLOT ================= */
 
 #slotBox{
 font-size:70px;
@@ -121,32 +145,31 @@ margin:20px;
 
 <!-- LEFT -->
 <div id="leftMenu">
-<div class="card" onclick="UI.go('shop')">🏪 SHOP</div>
-<div class="card" onclick="UI.go('inv')">🎒 INVENTORY</div>
-<div class="card" onclick="UI.go('mini')">🎮 MINI</div>
-</div>
 
-<!-- CENTER -->
-<div id="center">
+<div class="card" onclick="go('shop')">🏪 SHOP</div>
+<div class="card" onclick="go('inv')">🎒 INVENTORY</div>
+<div class="card" onclick="go('mini')">🎮 MINI</div>
+
+</div>
 
 <!-- WELCOME -->
 <div id="welcome" class="screen active">
-<div class="card" onclick="UI.go('mode')">CHOOSE GAME MODE</div>
+<div class="card" onclick="go('mode')">CHOOSE GAME MODE</div>
 </div>
 
 <!-- MODE -->
 <div id="mode" class="screen">
-<div class="card" onclick="UI.go('slot')">SLOT</div>
-<div class="card" onclick="UI.go('coin')">COIN</div>
-<div class="card" onclick="UI.go('bet')">BET</div>
-<div class="card" onclick="UI.go('welcome')">BACK</div>
+<div class="card" onclick="go('slot')">SLOT</div>
+<div class="card" onclick="go('coin')">COIN</div>
+<div class="card" onclick="go('bet')">BET</div>
+<div class="card" onclick="go('welcome')">BACK</div>
 </div>
 
 <!-- SLOT -->
 <div id="slot" class="screen">
 <div id="slotBox">❓❓❓</div>
 <div class="card" onclick="spin()">SPIN</div>
-<div class="card" onclick="UI.go('mode')">BACK</div>
+<div class="card" onclick="go('mode')">BACK</div>
 </div>
 
 <!-- COIN -->
@@ -154,14 +177,14 @@ margin:20px;
 <div id="coinBox">❓</div>
 <div class="card" onclick="coin('HEAD')">HEAD</div>
 <div class="card" onclick="coin('TAIL')">TAIL</div>
-<div class="card" onclick="UI.go('mode')">BACK</div>
+<div class="card" onclick="go('mode')">BACK</div>
 </div>
 
 <!-- BET -->
 <div id="bet" class="screen">
 <input id="betInput">
 <div class="card" onclick="bet()">START</div>
-<div class="card" onclick="UI.go('mode')">BACK</div>
+<div class="card" onclick="go('mode')">BACK</div>
 </div>
 
 <!-- SHOP -->
@@ -169,16 +192,21 @@ margin:20px;
 <div class="card" onclick="buy('slot')">Slot Boost</div>
 <div class="card" onclick="buy('coin')">Coin Boost</div>
 <div class="card" onclick="buy('bet')">Bet Boost</div>
-<div class="card" onclick="UI.go('welcome')">BACK</div>
+<div class="card" onclick="go('welcome')">BACK</div>
 </div>
 
 <!-- INVENTORY -->
 <div id="inv" class="screen">
 <div id="invBox">EMPTY</div>
-<div class="card" onclick="UI.go('welcome')">BACK</div>
+<div class="card" onclick="go('welcome')">BACK</div>
 </div>
 
+<!-- MINI -->
+<div id="mini" class="screen">
+<div class="card">MINI GAME (WIP)</div>
+<div class="card" onclick="go('welcome')">BACK</div>
 </div>
+
 </div>
 
 <script>
@@ -192,20 +220,25 @@ inv:[],
 equip:{slot:false,coin:false,bet:false}
 };
 
-/* ================= LOAD ================= */
-
-function load(){
-let d=localStorage.getItem("NEON");
-if(d) Object.assign(State,JSON.parse(d));
-}
-
-/* ================= SAVE ================= */
+/* ================= LOAD / SAVE ================= */
 
 function save(){
-localStorage.setItem("NEON",JSON.stringify(State));
+localStorage.setItem("NEON_CASINO",JSON.stringify(State));
 }
 
-/* ================= MONEY ================= */
+function load(){
+let d=localStorage.getItem("NEON_CASINO");
+if(d)Object.assign(State,JSON.parse(d));
+}
+
+/* ================= UI FIX ================= */
+
+function go(id){
+document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+}
+
+/* ================= RENDER ================= */
 
 function render(){
 document.getElementById("moneyUI").innerText="💰 "+State.money;
@@ -214,31 +247,19 @@ document.getElementById("invBox").innerText=State.inv.join(", ")||"EMPTY";
 save();
 }
 
-load();
-render();
+/* ================= MONEY ================= */
 
 function add(v){
 State.money+=v;
-if(State.money>State.best) State.best=State.money;
+if(State.money>State.best)State.best=State.money;
 render();
 }
 
 function sub(v){
 State.money-=v;
-if(State.money<0) State.money=0;
+if(State.money<0)State.money=0;
 render();
 }
-
-/* ================= UI ================= */
-
-const UI={
-current:"welcome",
-go(id){
-document.getElementById(this.current).classList.remove("active");
-document.getElementById(id).classList.add("active");
-this.current=id;
-}
-};
 
 /* ================= SLOT ================= */
 
@@ -251,6 +272,7 @@ sub(100);
 let box=document.getElementById("slotBox");
 
 let i=0;
+
 let inter=setInterval(()=>{
 
 box.innerText=
@@ -290,7 +312,7 @@ sub(200);
 function coin(t){
 let r=Math.random()<0.5?"HEAD":"TAIL";
 document.getElementById("coinBox").innerText=r;
-if(r===t) add(200);
+if(r===t)add(200);
 }
 
 /* ================= BET ================= */
@@ -315,6 +337,11 @@ if(x==="bet")State.equip.bet=true;
 
 render();
 }
+
+/* ================= START ================= */
+
+load();
+render();
 
 </script>
 
