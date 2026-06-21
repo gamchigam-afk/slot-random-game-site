@@ -2,274 +2,46 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-content="width=device-width, initial-scale=1.0">
-
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NEON CASINO X</title>
 
 <style>
-
-*{
-box-sizing:border-box;
-margin:0;
-padding:0;
-font-family:Arial,sans-serif;
-}
-
 body{
-background:
-radial-gradient(circle at center,
-#111,
-#000);
-
+margin:0;
+background:radial-gradient(circle,#111,#000);
+color:#00ffff;
+font-family:Arial;
 height:100vh;
 overflow:hidden;
-color:white;
-}
-
-/* 상단 */
-#topBar{
-position:fixed;
-top:10px;
-left:50%;
-transform:translateX(-50%);
-text-align:center;
-z-index:999;
-font-weight:bold;
-}
-
-#moneyUI{
-font-size:24px;
-color:#00ffff;
-text-shadow:
-0 0 5px #00ffff,
-0 0 15px #00ffff;
-}
-
-#bestUI{
-color:gold;
-}
-
-/* 이펙트 */
-#fx{
-position:fixed;
-right:20px;
-top:80px;
-z-index:999;
-}
-
-.fx{
-font-weight:bold;
-animation:floatUp 1s forwards;
-}
-
-.plus{
-color:lime;
-}
-
-.minus{
-color:red;
-}
-
-@keyframes floatUp{
-
-0%{
-opacity:1;
-transform:translateY(0);
-}
-
-100%{
-opacity:0;
-transform:translateY(-40px);
-}
-
-}
-
-/* 화면 */
-.screen{
-display:none;
-}
-
-.active{
-display:flex;
-}
-
-/* 레이아웃 */
-
-#layout{
-display:flex;
-height:100vh;
-}
-
-/* 왼쪽 메뉴 */
-
-#leftMenu{
-
-width:220px;
-
 display:flex;
 flex-direction:column;
-
-justify-content:center;
-
-gap:15px;
-
-padding-left:20px;
-}
-
-/* 중앙 */
-
-#center{
-
-flex:1;
-
-display:flex;
-
-justify-content:center;
 align-items:center;
-
-flex-direction:column;
+justify-content:center;
+text-shadow:0 0 10px #00ffff;
 }
 
-/* 네온 */
-
-.logo{
-
-font-size:64px;
-
-color:#00ffff;
-
-text-shadow:
-0 0 10px #00ffff,
-0 0 20px #00ffff,
-0 0 50px #00ffff;
-
-margin-bottom:40px;
+h1{
+text-shadow:0 0 20px #00ffff,0 0 40px #00ffff;
 }
 
+.screen{display:none;}
 .card{
-
 background:#111;
-
-border:2px solid #00ffff;
-
+border:1px solid #00ffff;
 color:#00ffff;
-
-padding:14px;
-
-border-radius:14px;
-
+padding:10px 15px;
+margin:5px;
 cursor:pointer;
-
-font-weight:bold;
-
-text-align:center;
-
-transition:.25s;
-
-box-shadow:
-0 0 5px #00ffff,
-0 0 15px #00ffff;
-
+box-shadow:0 0 10px #00ffff;
+transition:.2s;
 }
-
 .card:hover{
-
-background:#00ffff;
-
-color:black;
-
 transform:scale(1.05);
-
-box-shadow:
-0 0 10px #00ffff,
-0 0 25px #00ffff,
-0 0 50px #00ffff;
-
+box-shadow:0 0 20px #00ffff;
 }
 
-/* 슬롯 */
-
-.slot{
-
-font-size:70px;
-
-color:gold;
-
-margin:20px;
-}
-
-#slotInfo{
-
-color:gold;
-
-font-size:22px;
-
-margin-bottom:20px;
-}
-
-/* 코인 */
-
-.coin{
-
-font-size:80px;
-
-color:gold;
-
-margin:20px;
-}
-
-#coinInfo{
-
-color:gold;
-
-font-size:22px;
-
-margin-bottom:20px;
-}
-
-/* 베팅 */
-
-#betInput{
-
-padding:10px;
-
-font-size:20px;
-
-width:220px;
-
-margin-bottom:15px;
-}
-
-/* 상점 */
-
-.shopCard{
-
-width:260px;
-
-margin:10px;
-}
-
-/* 인벤토리 */
-
-#invBox{
-
-display:flex;
-
-flex-direction:column;
-
-gap:10px;
-}
-
-/* 미니게임 */
-
-#miniText{
-
-font-size:32px;
-
-color:gold;
-
-margin-bottom:20px;
+#moneyUI,#bestUI{
+margin:5px;
 }
 
 </style>
@@ -277,1027 +49,230 @@ margin-bottom:20px;
 
 <body>
 
-<div id="topBar">
+<h1>NEON CASINO X</h1>
 
-<div id="moneyUI">
-💰 1000
+<div id="moneyUI">💰 1000</div>
+<div id="bestUI">🏆 1000</div>
+
+<!-- SCREENS -->
+
+<div id="welcome" class="screen" style="display:flex;">
+  <div class="card" onclick="UI.go('mode')">START</div>
 </div>
 
-<div id="bestUI">
-🏆 0
+<div id="mode" class="screen">
+  <div class="card" onclick="UI.go('slot')">🎰 SLOT</div>
+  <div class="card" onclick="UI.go('coin')">🪙 COIN</div>
+  <div class="card" onclick="UI.go('bet')">💰 BET</div>
+  <div class="card" onclick="UI.go('shop')">🏪 SHOP</div>
+  <div class="card" onclick="UI.go('inventory')">🎒 INV</div>
 </div>
 
+<div id="slot" class="screen">
+  <div class="card" onclick="spin()">SPIN</div>
+  <div class="card" onclick="UI.go('mode')">BACK</div>
+  <div id="slotBox">❓❓❓</div>
 </div>
 
-<div id="fx"></div>
-
-<div id="layout">
-
-<!-- 왼쪽 -->
-
-<div id="leftMenu">
-
-<div class="card"
-onclick="UI.go('inventory')">
-🎒 INVENTORY
+<div id="coin" class="screen">
+  <div class="card" onclick="coinPick('HEAD')">HEAD</div>
+  <div class="card" onclick="coinPick('TAIL')">TAIL</div>
+  <div id="coinBox">❓</div>
+  <div class="card" onclick="UI.go('mode')">BACK</div>
 </div>
 
-<div class="card"
-onclick="UI.go('shop')">
-🏪 SHOP
+<div id="bet" class="screen">
+  <input id="betInput" placeholder="BET">
+  <div class="card" onclick="bet()">START</div>
+  <div class="card" onclick="UI.go('mode')">BACK</div>
 </div>
 
-<div class="card"
-onclick="UI.go('mini')">
-🎮 MINI GAME
+<div id="shop" class="screen">
+  <div class="card" onclick="buy('slot')">SLOT BOOST (300)</div>
+  <div class="card" onclick="buy('coin')">COIN BOOST (300)</div>
+  <div class="card" onclick="buy('bet')">BET BOOST (300)</div>
+  <div class="card" onclick="UI.go('mode')">BACK</div>
 </div>
 
-<div class="card"
-onclick="UI.go('odds')">
-📊 ODDS
+<div id="inventory" class="screen">
+  <div id="invBox">EMPTY</div>
+  <div class="card" onclick="UI.go('mode')">BACK</div>
 </div>
 
-</div>
-
-<!-- 중앙 -->
-
-<div id="center">
-
-<!-- 시작 -->
-
-<div id="welcome"
-class="screen active">
-
-<h1 class="logo">
-NEON CASINO X
-</h1>
-
-<div class="card"
-onclick="UI.go('mode')">
-
-🎰 CHOOSE GAME MODE
-
-</div>
-
-</div>
-
-<!-- 모드 -->
-
-<div id="mode"
-class="screen">
-
-<div class="card"
-onclick="UI.go('slot')">
-🎰 SLOT
-</div>
-
-<br>
-
-<div class="card"
-onclick="UI.go('coin')">
-🪙 COIN FLIP
-</div>
-
-<br>
-
-<div class="card"
-onclick="UI.go('bet')">
-💰 BET
-</div>
-
-<br>
-
-<div class="card"
-onclick="UI.go('welcome')">
-⬅ BACK
-</div>
-
-</div>
-
-<!-- 슬롯 -->
-
-<div id="slot"
-class="screen">
-
-<div class="slot">
-❓ ❓ ❓
-</div>
-
-<div id="slotInfo">
-
-SPIN TO PLAY
-
-</div>
-
-<div class="card"
-onclick="Game.spinStart()">
-SPIN
-</div>
-
-<br>
-
-<div class="card"
-onclick="UI.go('mode')">
-BACK
-</div>
-
-</div>
-
-<!-- 코인 -->
-
-<div id="coin"
-class="screen">
-
-<div class="coin">
-❓
-</div>
-
-<div id="coinInfo">
-
-CHOOSE
-
-</div>
-
-<div class="card"
-onclick="Game.coin('HEAD')">
-HEAD
-</div>
-
-<br>
-
-<div class="card"
-onclick="Game.coin('TAIL')">
-TAIL
-</div>
-
-<br>
-
-<div class="card"
-onclick="UI.go('mode')">
-BACK
-</div>
-
-</div>
-<!-- BET -->
-
-<div id="bet"
-class="screen">
-
-<h2 style="color:#00ffff;">
-💰 BET GAME
-</h2>
-
-<input
-id="betInput"
-type="number"
-placeholder="BET MONEY">
-
-<div id="betInfo"
-style="color:gold;margin:15px;">
-ENTER BET
-</div>
-
-<div class="card"
-onclick="Game.betPlay()">
-START BET
-</div>
-
-<br>
-
-<div class="card"
-onclick="UI.go('mode')">
-BACK
-</div>
-
-</div>
-
-<!-- SHOP -->
-
-<div id="shop"
-class="screen">
-
-<h2 style="color:#00ffff;">
-🏪 SHOP
-</h2>
-
-<div class="card shopCard"
-onclick="Shop.buy('slot')">
-
-🎰 SLOT BOOSTER
-
-<br><br>
-
-💰 2000
-
-<br><br>
-
-슬롯 확률 +3%
-
-</div>
-
-<div class="card shopCard"
-onclick="Shop.buy('coin')">
-
-🪙 COIN BOOSTER
-
-<br><br>
-
-💰 2000
-
-<br><br>
-
-코인 확률 +3%
-
-</div>
-
-<div class="card shopCard"
-onclick="Shop.buy('bet')">
-
-💰 BET BOOSTER
-
-<br><br>
-
-💰 2000
-
-<br><br>
-
-베팅 확률 +3%
-
-</div>
-
-<br>
-
-<div class="card"
-onclick="UI.go('welcome')">
-
-BACK
-
-</div>
-
-</div>
-
-<!-- INVENTORY -->
-
-<div id="inventory"
-class="screen">
-
-<h2 style="color:#00ffff;">
-🎒 INVENTORY
-</h2>
-
-<div id="invBox">
-
-EMPTY
-
-</div>
-
-<br>
-
-<div class="card"
-onclick="UI.go('welcome')">
-
-BACK
-
-</div>
-
-</div>
-
-<!-- MINI -->
-
-<div id="mini"
-class="screen">
-
-<h2 style="color:#00ffff;">
-🎮 MINI GAME
-</h2>
-
-<div id="miniText">
-
-WAIT...
-
-</div>
-
-<div class="card"
-onclick="Mini.click()">
-
-CLICK
-
-</div>
-
-<br>
-
-<div class="card"
-onclick="Mini.reset()">
-
-RESET
-
-</div>
-
-<br>
-
-<div class="card"
-onclick="UI.go('welcome')">
-
-BACK
-
-</div>
-
-</div>
-
-<!-- ODDS -->
-
-<div id="odds"
-class="screen">
-
-<h2 style="color:#00ffff;">
-📊 ODDS
-</h2>
-
-<div style="color:gold;">
-
-🎰 SLOT : 3%
-
-<br><br>
-
-🪙 COIN : 50%
-
-<br><br>
-
-💰 BET : 50%
-
-<br><br>
-
-(+3% 아이템 적용 가능)
-
-</div>
-
-<br>
-
-<div class="card"
-onclick="UI.go('welcome')">
-
-BACK
-
-</div>
-
-</div>
-
-</div>
-</div>
+<!-- SOUND -->
+<audio id="winSound" src="https://www.soundjay.com/buttons/sounds/button-09.mp3"></audio>
+<audio id="loseSound" src="https://www.soundjay.com/buttons/sounds/button-10.mp3"></audio>
 
 <script>
 
-/* PART 2(JS)는 다음에 붙임 */
+/* ================= STATE + LOAD ================= */
+
+const State = JSON.parse(localStorage.getItem("casino")) || {
+  money:1000,
+  best:1000,
+  inv:[]
+};
+
+/* ================= SAVE ================= */
+
+function save(){
+  localStorage.setItem("casino",JSON.stringify(State));
+}
+
+/* ================= UI ================= */
+
+const UI={
+go(id){
+document.querySelectorAll(".screen").forEach(s=>s.style.display="none");
+document.getElementById(id).style.display="flex";
+}
+};
+
+/* ================= RENDER ================= */
+
+function Render(){
+document.getElementById("moneyUI").innerText="💰 "+State.money;
+document.getElementById("bestUI").innerText="🏆 "+State.best;
+updateInv();
+save();
+}
+
+/* ================= MONEY ================= */
+
+function add(v){
+State.money+=v;
+if(State.money>State.best) State.best=State.money;
+Render();
+}
+
+function sub(v){
+State.money-=v;
+if(State.money<0) State.money=0;
+Render();
+}
+
+/* ================= SHOP + EFFECT ================= */
+
+function has(item){
+return State.inv.includes(item);
+}
+
+function buy(item){
+const price=300;
+if(State.money<price) return;
+sub(price);
+State.inv.push(item);
+Render();
+}
+
+/* boost */
+function boost(type){
+if(type==="slot") return has("slot")?1.1:1;
+if(type==="coin") return has("coin")?1.1:1;
+if(type==="bet") return has("bet")?1.2:1;
+return 1;
+}
+
+/* ================= SLOT ================= */
+
+function spin(){
+sub(100);
+
+const box=document.getElementById("slotBox");
+const arr=["🍒","🍋","💎","7️⃣"];
+
+let i=0;
+
+let t=setInterval(()=>{
+
+box.innerText=
+arr[Math.random()*4|0]+" "+
+arr[Math.random()*4|0]+" "+
+arr[Math.random()*4|0];
+
+i++;
+
+if(i>20){
+clearInterval(t);
+
+if(Math.random()<0.3*boost("slot")){
+box.innerText="WIN";
+add(500);
+winSound.play();
+}else{
+box.innerText="LOSE";
+loseSound.play();
+}
+}
+
+},70);
+}
+
+/* ================= COIN ================= */
+
+function coinPick(type){
+sub(50);
+
+const box=document.getElementById("coinBox");
+
+let i=0;
+
+let t=setInterval(()=>{
+
+box.innerText=Math.random()<0.5?"HEAD":"TAIL";
+
+i++;
+
+if(i>15){
+clearInterval(t);
+
+let r=Math.random()<0.5?"HEAD":"TAIL";
+
+box.innerText=r;
+
+if(r===type && Math.random()<0.5*boost("coin")){
+add(100);
+winSound.play();
+}else{
+loseSound.play();
+}
+}
+
+},80);
+}
+
+/* ================= BET ================= */
+
+function bet(){
+let v=Number(document.getElementById("betInput").value);
+if(!v||v>State.money) return;
+
+sub(v);
+
+setTimeout(()=>{
+
+if(Math.random()<0.5*boost("bet")){
+add(v*2);
+winSound.play();
+}else{
+loseSound.play();
+}
+
+},700);
+}
+
+/* ================= INVENTORY ================= */
+
+function updateInv(){
+document.getElementById("invBox").innerText=
+State.inv.length?State.inv.join(", "):"EMPTY";
+}
+
+/* INIT */
+
+Render();
 
 </script>
 
 </body>
 </html>
-/* =========================
-   SAVE DATA
-========================= */
-
-const State={
-
-money:1000,
-best:1000,
-
-inv:[],
-
-equip:{
-slot:false,
-coin:false,
-bet:false
-},
-
-timer:{}
-
-};
-
-/* =========================
-   LOAD
-========================= */
-
-function loadData(){
-
-const save=
-JSON.parse(
-localStorage.getItem(
-"neonCasinoSave"
-));
-
-if(!save) return;
-
-State.money=save.money||1000;
-State.best=save.best||1000;
-State.inv=save.inv||[];
-
-State.equip=
-save.equip||
-{
-slot:false,
-coin:false,
-bet:false
-};
-
-}
-
-function saveData(){
-
-localStorage.setItem(
-"neonCasinoSave",
-
-JSON.stringify({
-
-money:State.money,
-best:State.best,
-
-inv:State.inv,
-
-equip:State.equip
-
-})
-
-);
-
-}
-
-/* =========================
-   FX
-========================= */
-
-function fx(v){
-
-const box=
-document.getElementById("fx");
-
-const d=
-document.createElement("div");
-
-d.className=
-"fx "+(v>=0?"plus":"minus");
-
-d.innerText=
-(v>=0?"+":"")+v;
-
-box.appendChild(d);
-
-setTimeout(
-()=>d.remove(),
-1000
-);
-
-}
-
-/* =========================
-   MONEY
-========================= */
-
-const Money={
-
-add(v){
-
-State.money+=v;
-
-if(State.money>State.best){
-
-State.best=
-State.money;
-
-}
-
-fx(v);
-
-Render.update();
-
-saveData();
-
-},
-
-sub(v){
-
-State.money-=v;
-
-if(State.money<0)
-State.money=0;
-
-fx(-v);
-
-Render.update();
-
-saveData();
-
-}
-
-};
-
-/* =========================
-   UI
-========================= */
-
-const UI={
-
-go(id){
-
-document
-.querySelectorAll(".screen")
-.forEach(s=>
-s.classList.remove(
-"active"
-));
-
-document
-.getElementById(id)
-.classList.add(
-"active"
-);
-
-if(id==="inventory"){
-
-Render.inventory();
-
-}
-
-}
-
-};
-
-/* =========================
-   INVENTORY
-========================= */
-
-const Render={
-
-update(){
-
-document
-.getElementById(
-"moneyUI"
-)
-.innerText=
-"💰 "+State.money;
-
-document
-.getElementById(
-"bestUI"
-)
-.innerText=
-"🏆 "+State.best;
-
-},
-
-inventory(){
-
-const box=
-document.getElementById(
-"invBox"
-);
-
-box.innerHTML="";
-
-if(State.inv.length===0){
-
-box.innerHTML=
-"<div style='color:gold'>EMPTY</div>";
-
-return;
-
-}
-
-State.inv.forEach(
-(item,index)=>{
-
-const d=
-document.createElement(
-"div"
-);
-
-d.className=
-"card";
-
-let title="";
-
-if(item==="slot")
-title="🎰 SLOT BOOSTER";
-
-if(item==="coin")
-title="🪙 COIN BOOSTER";
-
-if(item==="bet")
-title="💰 BET BOOSTER";
-
-d.innerHTML=
-
-title+
-
-"<br><br>"+
-
-"<button onclick='equipItem("+index+")'>장착</button>";
-
-box.appendChild(d);
-
-});
-
-}
-
-};
-
-/* =========================
-   EQUIP
-========================= */
-
-function equipItem(index){
-
-const item=
-State.inv[index];
-
-State.equip[item]=true;
-
-State.inv.splice(
-index,
-1
-);
-
-Render.inventory();
-
-saveData();
-
-}
-
-/* =========================
-   START
-========================= */
-
-loadData();
-
-Render.update();
-  /* =========================
-   SHOP
-========================= */
-
-const Shop={
-
-buy(type){
-
-if(State.money<2000){
-alert("돈 부족");
-return;
-}
-
-Money.sub(2000);
-
-State.inv.push(type);
-
-saveData();
-
-alert("구매 완료");
-
-}
-
-};
-
-/* =========================
-   SLOT
-========================= */
-
-const Game={
-
-spinStart(){
-
-if(State.money<100){
-alert("돈 부족");
-return;
-}
-
-Money.sub(100);
-
-const box=
-document.querySelector(".slot");
-
-const info=
-document.getElementById("slotInfo");
-
-const icons=[
-"🍒",
-"🍋",
-"🍇",
-"💎",
-"7️⃣"
-];
-
-let spins=0;
-
-clearInterval(
-State.timer.slot
-);
-
-State.timer.slot=
-setInterval(()=>{
-
-const a=
-icons[Math.floor(
-Math.random()*icons.length
-)];
-
-const b=
-icons[Math.floor(
-Math.random()*icons.length
-)];
-
-const c=
-icons[Math.floor(
-Math.random()*icons.length
-)];
-
-box.innerText=
-a+" "+b+" "+c;
-
-spins++;
-
-if(spins>=25){
-
-clearInterval(
-State.timer.slot
-);
-
-const chance=
-0.03+
-(
-State.equip.slot
-?0.03
-:0
-);
-
-if(Math.random()<chance){
-
-Money.add(1000);
-
-info.innerText=
-"🎉 JACKPOT +1000";
-
-}else{
-
-info.innerText=
-"😢 꽝";
-
-}
-
-}
-
-},80);
-
-},
-
-coin(choice){
-
-if(State.money<50){
-alert("돈 부족");
-return;
-}
-
-Money.sub(50);
-
-const coin=
-document.querySelector(".coin");
-
-const info=
-document.getElementById("coinInfo");
-
-let count=0;
-
-clearInterval(
-State.timer.coin
-);
-
-State.timer.coin=
-setInterval(()=>{
-
-coin.innerText=
-Math.random()<0.5
-?"HEAD"
-:"TAIL";
-
-count++;
-
-if(count>=20){
-
-clearInterval(
-State.timer.coin
-);
-
-const chance=
-0.50+
-(
-State.equip.coin
-?0.03
-:0
-);
-
-const result=
-Math.random()<chance
-?choice
-:(choice==="HEAD"
-?"TAIL"
-:"HEAD");
-
-coin.innerText=
-result;
-
-if(result===choice){
-
-Money.add(100);
-
-info.innerText=
-"🎉 성공 +100";
-
-}else{
-
-info.innerText=
-"😢 실패";
-
-}
-
-}
-
-},80);
-
-},
-
-betPlay(){
-
-const input=
-document.getElementById(
-"betInput"
-);
-
-const bet=
-Number(input.value);
-
-if(
-!bet||
-bet<=0||
-bet>State.money
-){
-alert("베팅 금액 오류");
-return;
-}
-
-Money.sub(bet);
-
-const chance=
-0.50+
-(
-State.equip.bet
-?0.03
-:0
-);
-
-setTimeout(()=>{
-
-if(Math.random()<chance){
-
-Money.add(
-bet*2
-);
-
-alert(
-"성공 +"+
-(bet*2)
-);
-
-}else{
-
-alert(
-"실패"
-);
-
-}
-
-},1000);
-
-}
-
-};
-
-/* =========================
-   MINI GAME
-========================= */
-
-const Mini={
-
-ready:false,
-
-start(){
-
-this.ready=false;
-
-const text=
-document.getElementById(
-"miniText"
-);
-
-text.innerText=
-"WAIT...";
-
-setTimeout(()=>{
-
-this.ready=true;
-
-this.time=
-Date.now();
-
-text.innerText=
-"GO!";
-
-},
-1000+
-Math.random()*3000
-);
-
-},
-
-click(){
-
-if(!this.ready){
-
-alert("실격");
-
-this.start();
-
-return;
-
-}
-
-const diff=
-Date.now()-
-this.time;
-
-if(diff<=200){
-
-Money.add(100);
-
-alert(
-"⚡ PERFECT +100"
-);
-
-}
-else
-if(diff<=500){
-
-Money.add(50);
-
-alert(
-"👍 GOOD +50"
-);
-
-}
-else{
-
-alert(
-"🐢 TOO SLOW"
-);
-
-}
-
-this.start();
-
-},
-
-reset(){
-
-this.start();
-
-}
-
-};
-
-/* =========================
-   MINI INIT
-========================= */
-
-document
-.getElementById(
-"mini"
-)
-.addEventListener(
-"click",
-()=>{
-
-if(
-document
-.getElementById("mini")
-.classList.contains(
-"active"
-)
-){
-
-if(!Mini.ready){
-
-Mini.start();
-
-}
-
-}
-
-}
-);
