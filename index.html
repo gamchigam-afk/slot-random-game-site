@@ -38,23 +38,6 @@ text-shadow:0 0 10px #ffd700;
 
 /* ================= LAYOUT ================= */
 
-#layout{
-display:flex;
-height:100vh;
-}
-
-/* LEFT PANEL */
-
-#left{
-width:200px;
-display:flex;
-flex-direction:column;
-justify-content:center;
-gap:10px;
-}
-
-/* SCREEN SYSTEM (FULL PAGE) */
-
 .screen{
 display:none;
 position:fixed;
@@ -66,27 +49,28 @@ justify-content:center;
 
 .active{display:flex;}
 
-/* CARD */
+/* ================= BUTTON ================= */
 
 .card{
-padding:10px;
-margin:6px;
+padding:12px;
+margin:8px;
 border:1px solid #ffd700;
 cursor:pointer;
+background:rgba(0,0,0,0.5);
 box-shadow:0 0 10px #ffcc00;
-background:rgba(0,0,0,0.4);
+border-radius:10px;
+transition:0.2s;
+font-weight:bold;
 }
 
-/* GOLD */
-
-#gold{
-font-size:100px;
-cursor:pointer;
-user-select:none;
-transition:0.1s;
+.card:hover{
+transform:scale(1.05);
+box-shadow:0 0 20px #ffd700,0 0 40px #ffcc00;
 }
 
-.shrink{transform:scale(0.7);}
+.card:active{
+transform:scale(0.95);
+}
 
 /* SLOT */
 
@@ -94,8 +78,6 @@ transition:0.1s;
 font-size:70px;
 margin:20px;
 }
-
-/* SMALL TEXT */
 
 .small{
 font-size:14px;
@@ -112,102 +94,63 @@ color:#ffdd88;
 
 <div id="title">NEON CASINO X (BETA)</div>
 
-<div id="layout">
-
-<!-- LEFT MENU -->
-<div id="left">
-
-<div class="card" onclick="go('inv')">INVENTORY</div>
-<div class="card" onclick="go('shop')">SHOP</div>
-<div class="card" onclick="code()">CODE INPUT</div>
-
-</div>
-
-</div>
-
-<!-- ================= MAIN MENU ================= -->
+<!-- MENU -->
 <div id="menu" class="screen active">
-
 <div class="card" onclick="go('choose')">CHOOSE GAME MODE</div>
-
 </div>
 
-<!-- ================= CHOOSE GAME MODE ================= -->
+<!-- CHOOSE -->
 <div id="choose" class="screen">
-
 <div class="card" onclick="go('slot')">SLOT</div>
 <div class="card" onclick="go('coin')">COIN</div>
 <div class="card" onclick="go('bet')">BET</div>
-<div class="card" onclick="go('mine')">GOLD MINE</div>
-
+<div class="card" onclick="go('shop')">SHOP</div>
+<div class="card" onclick="go('inv')">INVENTORY</div>
+<div class="card" onclick="code()">CODE INPUT</div>
 <div class="card" onclick="go('menu')">BACK</div>
-
 </div>
 
-<!-- ================= SLOT ================= -->
+<!-- SLOT -->
 <div id="slot" class="screen">
-
 <div id="slotBox">❓❓❓</div>
 <div class="card" onclick="spin()">SPIN</div>
 <div class="small" id="slotFail"></div>
 <div class="card" onclick="go('choose')">BACK</div>
-
 </div>
 
-<!-- ================= COIN ================= -->
+<!-- COIN -->
 <div id="coin" class="screen">
-
 <div id="coinBox">❓</div>
 <div class="card" onclick="coin('HEAD')">HEAD</div>
 <div class="card" onclick="coin('TAIL')">TAIL</div>
 <div class="card" onclick="go('choose')">BACK</div>
-
 </div>
 
-<!-- ================= BET ================= -->
+<!-- BET -->
 <div id="bet" class="screen">
-
 <input id="betInput">
 <div class="card" onclick="bet()">START</div>
 <div class="card" onclick="go('choose')">BACK</div>
-
 </div>
 
-<!-- ================= SHOP ================= -->
+<!-- SHOP -->
 <div id="shop" class="screen">
-
-<div class="card">SHOP READY</div>
-<div class="card" onclick="go('menu')">BACK</div>
-
+<div class="card" onclick="buy('slot_item')">SLOT ITEM - 30000</div>
+<div class="card" onclick="buy('coin_item')">COIN ITEM - 30000</div>
+<div class="card" onclick="buy('bet_item')">BET ITEM - 30000</div>
+<div class="card" onclick="go('choose')">BACK</div>
 </div>
 
-<!-- ================= INVENTORY ================= -->
+<!-- INVENTORY -->
 <div id="inv" class="screen">
-
-<div class="card">INVENTORY READY</div>
-<div class="card" onclick="go('menu')">BACK</div>
-
+<div id="invBox">EMPTY</div>
+<div class="card" onclick="go('choose')">BACK</div>
 </div>
 
-<!-- ================= CODE INPUT ================= -->
+<!-- CODE -->
 <div id="code" class="screen">
-
-<div class="card">준비중..</div>
-<div class="card" onclick="go('menu')">BACK</div>
-
-</div>
-
-<!-- ================= GOLD MINE ================= -->
-<div id="mine" class="screen">
-
-<h2>⛏️ GOLD MINE</h2>
-
-<div id="gold">🪙</div>
-
-<div id="mineText">10 SECONDS HOLD</div>
-
-<div class="card" onclick="go('choose')">EXIT</div>
-
+<div id="codeBox" class="card">준비중입니다</div>
+<div class="card" onclick="go('choose')">BACK</div>
 </div>
 
 <script>
@@ -216,8 +159,26 @@ color:#ffdd88;
 
 const State={
 money:50000,
-best:50000
+best:50000,
+inv:[]
 };
+
+/* ================= SAVE SYSTEM ================= */
+
+function save(){
+localStorage.setItem("NEON_CASINO",JSON.stringify(State));
+}
+
+function load(){
+const d=localStorage.getItem("NEON_CASINO");
+if(!d) return;
+
+const s=JSON.parse(d);
+
+State.money=s.money??50000;
+State.best=s.best??50000;
+State.inv=s.inv??[];
+}
 
 /* ================= UI ================= */
 
@@ -243,12 +204,15 @@ render();
 function render(){
 moneyUI.innerText="💰 "+State.money;
 bestUI.innerText="🏆 "+State.best;
+invBox.innerHTML=State.inv.length?State.inv.join("<br>"):"EMPTY";
+save();
 }
 
-/* ================= SLOT ================= */
+/* ================= SLOT (450:1) ================= */
 
 function spin(){
 sub(100);
+
 let box=slotBox;
 let i=0;
 
@@ -262,9 +226,10 @@ i++;
 
 if(i>15){
 clearInterval(inter);
-let a=Math.random(),b=Math.random(),c=Math.random();
 
-if(a===b&&b===c){
+let win=Math.random()<1/450;
+
+if(win){
 add(1000);
 slotFail.innerText="";
 }else{
@@ -290,6 +255,7 @@ if(r===t)add(200);
 function bet(){
 let v=+betInput.value;
 if(v>State.money)return;
+
 sub(v);
 setTimeout(()=>Math.random()<0.5?add(v*2):0,500);
 }
@@ -300,53 +266,19 @@ function code(){
 go('code');
 }
 
-/* ================= GOLD MINE ================= */
+/* ================= SHOP ================= */
 
-const gold=document.getElementById("gold");
+function buy(item){
+if(State.money<30000)return;
 
-let holding=false;
-let timer=null;
-let time=0;
-
-gold.onmousedown=()=>{
-
-holding=true;
-time=0;
-mineText.innerText="MINING... HOLD 10s";
-
-timer=setInterval(()=>{
-
-if(!holding){
-clearInterval(timer);
-mineText.innerText="FAILED";
-return;
+sub(30000);
+State.inv.push(item);
 }
 
-time++;
+/* ================= INIT ================= */
 
-if(time>=1000){
-clearInterval(timer);
-add(10);
-mineText.innerText="SUCCESS +10";
-holding=false;
-}
-
-},10);
-
-};
-
-gold.onmouseup=stopMine;
-gold.onmouseleave=stopMine;
-
-function stopMine(){
-
-if(!holding) return;
-
-holding=false;
-clearInterval(timer);
-mineText.innerText="FAILED";
-
-}
+load();
+render();
 
 </script>
 
