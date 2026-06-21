@@ -88,6 +88,15 @@ background:rgba(0,0,0,0.5);
 cursor:pointer;
 }
 
+/* ================= INPUT ================= */
+
+input{
+padding:10px;
+border:1px solid #ffd700;
+background:#000;
+color:#ffd700;
+}
+
 /* ================= GOLD ================= */
 
 #gold{
@@ -119,6 +128,7 @@ font-size:60px;
 <div class="btn" onclick="go('mine')">⛏ GOLD</div>
 <div class="btn" onclick="go('inv')">🎒 INV</div>
 <div class="btn" onclick="go('shop')">🛒 SHOP</div>
+<div class="btn" onclick="go('code')">🔑 CODE</div>
 </div>
 
 <!-- MENU -->
@@ -158,11 +168,19 @@ font-size:60px;
 <div class="card" onclick="go('choose')">BACK</div>
 </div>
 
-<!-- GOLD MINE -->
+<!-- GOLD -->
 <div id="mine" class="screen">
 <div id="gold">🪙</div>
 <div id="mineText">HOLD 10s</div>
 <div class="card" onclick="go('choose')">EXIT</div>
+</div>
+
+<!-- CODE INPUT -->
+<div id="code" class="screen">
+<div class="card">CODE INPUT</div>
+<input id="codeInput" placeholder="ENTER CODE">
+<div class="card" onclick="useCode()">SUBMIT</div>
+<div class="card" onclick="go('menu')">BACK</div>
 </div>
 
 <script>
@@ -173,6 +191,8 @@ const State={
 money:50000,
 best:50000
 };
+
+let codeUsed=false;
 
 /* ================= SAVE ================= */
 
@@ -251,7 +271,7 @@ else sub(200);
 },70);
 }
 
-/* ================= COIN (100 cost / 200 win) ================= */
+/* ================= COIN ================= */
 
 function coin(t){
 
@@ -278,7 +298,7 @@ if(r===t) add(200);
 },80);
 }
 
-/* ================= BET (numbers only) ================= */
+/* ================= BET ================= */
 
 function bet(){
 
@@ -291,12 +311,32 @@ if(!v || v>State.money) return;
 
 sub(v);
 
-setTimeout(()=>{
-if(Math.random()<0.5) add(v*2);
-},500);
+setTimeout(()=>Math.random()<0.5?add(v*2):0,500);
 }
 
-/* ================= GOLD MINE (10s hold) ================= */
+/* ================= CODE SYSTEM ================= */
+
+function useCode(){
+
+let v=document.getElementById("codeInput").value;
+
+if(codeUsed){
+log("CODE ALREADY USED");
+return;
+}
+
+if(v==="welcome511"){
+add(30000);
+log("CODE +30000");
+codeUsed=true;
+}else{
+log("WRONG CODE");
+}
+
+document.getElementById("codeInput").value="";
+}
+
+/* ================= GOLD MINE ================= */
 
 let hold=false;
 let time=0;
