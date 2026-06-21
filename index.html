@@ -3,85 +3,110 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEON CASINO X (BETA)</title>
+<title>NEON CASINO X</title>
 
 <style>
 
+/* ================= BASE ================= */
+
 body{
 margin:0;
-background:radial-gradient(circle,#0b0700,#000);
+background:radial-gradient(circle,#120c00,#000);
 color:#ffd700;
 font-family:Arial;
 overflow:hidden;
-text-align:center;
 }
+
+/* ================= HUD (FIXED RIGHT TOP) ================= */
+
+#hud{
+position:fixed;
+top:10px;
+right:10px;
+text-align:right;
+font-size:14px;
+z-index:1000;
+}
+
+#money,#best{
+font-weight:bold;
+text-shadow:0 0 10px #ffd700;
+}
+
+#log{
+margin-top:8px;
+font-size:12px;
+color:#ffdd88;
+height:40px;
+overflow:hidden;
+}
+
+/* ================= LEFT MENU ================= */
+
+#left{
+position:fixed;
+left:10px;
+top:50%;
+transform:translateY(-50%);
+display:flex;
+flex-direction:column;
+gap:10px;
+z-index:1000;
+}
+
+.btn{
+padding:10px;
+border:1px solid #ffd700;
+background:rgba(0,0,0,0.4);
+cursor:pointer;
+box-shadow:0 0 10px #ffcc00;
+text-align:center;
+transition:0.2s;
+}
+.btn:hover{transform:scale(1.05);}
+
+/* ================= CENTER SCREEN ================= */
+
+.screen{
+position:fixed;
+inset:0;
+display:none;
+align-items:center;
+justify-content:center;
+flex-direction:column;
+}
+
+.active{display:flex;}
 
 /* ================= TITLE ================= */
 
 #title{
 font-size:60px;
-margin-top:60px;
-text-shadow:0 0 10px #ffd700,0 0 30px #ffcc00;
+text-shadow:0 0 20px #ffd700;
 }
 
-/* ================= MONEY ================= */
-
-#moneyUI,#bestUI{
-position:fixed;
-left:50%;
-transform:translateX(-50%);
-text-shadow:0 0 10px #ffd700;
+#sub{
+font-size:18px;
+margin-top:10px;
 }
 
-#moneyUI{top:10px;}
-#bestUI{top:40px;color:gold;}
-
-/* ================= LAYOUT ================= */
-
-.screen{
-display:none;
-position:fixed;
-inset:0;
-flex-direction:column;
-align-items:center;
-justify-content:center;
-}
-
-.active{display:flex;}
-
-/* ================= BUTTON ================= */
+/* ================= CARDS ================= */
 
 .card{
 padding:12px;
 margin:8px;
 border:1px solid #ffd700;
-cursor:pointer;
 background:rgba(0,0,0,0.5);
-box-shadow:0 0 10px #ffcc00;
-border-radius:10px;
-transition:0.2s;
-font-weight:bold;
+cursor:pointer;
 }
 
-.card:hover{
-transform:scale(1.05);
-box-shadow:0 0 20px #ffd700,0 0 40px #ffcc00;
-}
+/* ================= GOLD ================= */
 
-.card:active{
-transform:scale(0.95);
-}
-
-/* SLOT */
-
-#slotBox{
-font-size:70px;
-margin:20px;
-}
-
-.small{
-font-size:14px;
-color:#ffdd88;
+#gold{
+font-size:100px;
+cursor:pointer;
+user-select:none;
+transition:0.1s;
 }
 
 </style>
@@ -89,68 +114,72 @@ color:#ffdd88;
 
 <body>
 
-<div id="moneyUI">💰 50000</div>
-<div id="bestUI">🏆 50000</div>
-
-<div id="title">NEON CASINO X (BETA)</div>
-
-<!-- MENU -->
-<div id="menu" class="screen active">
-<div class="card" onclick="go('choose')">CHOOSE GAME MODE</div>
+<!-- ================= HUD ================= -->
+<div id="hud">
+<div id="money">💰 50000</div>
+<div id="best">🏆 50000</div>
+<div id="log"></div>
 </div>
 
-<!-- CHOOSE -->
+<!-- ================= LEFT ================= -->
+<div id="left">
+<div class="btn" onclick="go('mine')">⛏ GOLD</div>
+<div class="btn" onclick="go('inv')">🎒 INV</div>
+<div class="btn" onclick="go('shop')">🛒 SHOP</div>
+</div>
+
+<!-- ================= MENU ================= -->
+<div id="menu" class="screen active">
+<div id="title">NEON CASINO X</div>
+<div id="sub">MODE SELECT</div>
+<div class="card" onclick="go('choose')">START</div>
+</div>
+
+<!-- ================= CHOOSE ================= -->
 <div id="choose" class="screen">
 <div class="card" onclick="go('slot')">SLOT</div>
 <div class="card" onclick="go('coin')">COIN</div>
 <div class="card" onclick="go('bet')">BET</div>
-<div class="card" onclick="go('shop')">SHOP</div>
-<div class="card" onclick="go('inv')">INVENTORY</div>
-<div class="card" onclick="code()">CODE INPUT</div>
+<div class="card" onclick="go('mine')">GOLD MINE</div>
 <div class="card" onclick="go('menu')">BACK</div>
 </div>
 
-<!-- SLOT -->
+<!-- ================= SLOT ================= -->
 <div id="slot" class="screen">
-<div id="slotBox">❓❓❓</div>
-<div class="card" onclick="spin()">SPIN</div>
-<div class="small" id="slotFail"></div>
+<div class="card" onclick="spin()" id="slotBox">SPIN</div>
 <div class="card" onclick="go('choose')">BACK</div>
 </div>
 
-<!-- COIN -->
+<!-- ================= COIN ================= -->
 <div id="coin" class="screen">
-<div id="coinBox">❓</div>
-<div class="card" onclick="coin('HEAD')">HEAD</div>
+<div class="card" onclick="coin('HEAD')" id="coinBox">HEAD</div>
 <div class="card" onclick="coin('TAIL')">TAIL</div>
 <div class="card" onclick="go('choose')">BACK</div>
 </div>
 
-<!-- BET -->
+<!-- ================= BET ================= -->
 <div id="bet" class="screen">
 <input id="betInput">
 <div class="card" onclick="bet()">START</div>
 <div class="card" onclick="go('choose')">BACK</div>
 </div>
 
-<!-- SHOP -->
+<!-- ================= SHOP ================= -->
 <div id="shop" class="screen">
-<div class="card" onclick="buy('slot_item')">SLOT ITEM - 30000</div>
-<div class="card" onclick="buy('coin_item')">COIN ITEM - 30000</div>
-<div class="card" onclick="buy('bet_item')">BET ITEM - 30000</div>
-<div class="card" onclick="go('choose')">BACK</div>
+<div class="card">SHOP READY</div>
+<div class="card" onclick="go('menu')">BACK</div>
 </div>
 
-<!-- INVENTORY -->
+<!-- ================= INVENTORY ================= -->
 <div id="inv" class="screen">
-<div id="invBox">EMPTY</div>
-<div class="card" onclick="go('choose')">BACK</div>
+<div class="card">INVENTORY READY</div>
+<div class="card" onclick="go('menu')">BACK</div>
 </div>
 
-<!-- CODE -->
-<div id="code" class="screen">
-<div id="codeBox" class="card">준비중입니다</div>
-<div class="card" onclick="go('choose')">BACK</div>
+<!-- ================= GOLD MINE ================= -->
+<div id="mine" class="screen">
+<div id="gold">🪙</div>
+<div class="card" onclick="go('choose')">EXIT</div>
 </div>
 
 <script>
@@ -159,32 +188,26 @@ color:#ffdd88;
 
 const State={
 money:50000,
-best:50000,
-inv:[]
+best:50000
 };
 
-/* ================= SAVE SYSTEM ================= */
+/* ================= SAVE ================= */
 
 function save(){
-localStorage.setItem("NEON_CASINO",JSON.stringify(State));
+localStorage.setItem("NEON",JSON.stringify(State));
 }
 
 function load(){
-const d=localStorage.getItem("NEON_CASINO");
-if(!d) return;
-
-const s=JSON.parse(d);
-
-State.money=s.money??50000;
-State.best=s.best??50000;
-State.inv=s.inv??[];
+const d=localStorage.getItem("NEON");
+if(d)Object.assign(State,JSON.parse(d));
 }
 
-/* ================= UI ================= */
+/* ================= HUD LOG ================= */
 
-function go(id){
-document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
-document.getElementById(id).classList.add("active");
+function log(t){
+const l=document.getElementById("log");
+l.innerText=t;
+setTimeout(()=>l.innerText="",1500);
 }
 
 /* ================= MONEY ================= */
@@ -193,19 +216,29 @@ function add(v){
 State.money+=v;
 if(State.money>State.best)State.best=State.money;
 render();
+log("+"+v);
 }
 
 function sub(v){
 State.money-=v;
 if(State.money<0)State.money=0;
 render();
+log("-"+v);
 }
 
+/* ================= RENDER ================= */
+
 function render(){
-moneyUI.innerText="💰 "+State.money;
-bestUI.innerText="🏆 "+State.best;
-invBox.innerHTML=State.inv.length?State.inv.join("<br>"):"EMPTY";
+money.innerText="💰 "+State.money;
+best.innerText="🏆 "+State.best;
 save();
+}
+
+/* ================= SCREEN ================= */
+
+function go(id){
+document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+document.getElementById(id).classList.add("active");
 }
 
 /* ================= SLOT (450:1) ================= */
@@ -213,14 +246,14 @@ save();
 function spin(){
 sub(100);
 
-let box=slotBox;
 let i=0;
 
 let inter=setInterval(()=>{
 
-box.innerText=["🍒","🍋","⭐","7️⃣"][Math.floor(Math.random()*4)]
-+" "+["🍒","🍋","⭐","7️⃣"][Math.floor(Math.random()*4)]
-+" "+["🍒","🍋","⭐","7️⃣"][Math.floor(Math.random()*4)];
+document.getElementById("slotBox").innerText=
+["🍒","🍋","⭐","7️⃣"][Math.floor(Math.random()*4)]+" "
++["🍒","🍋","⭐","7️⃣"][Math.floor(Math.random()*4)]+" "
++["🍒","🍋","⭐","7️⃣"][Math.floor(Math.random()*4)];
 
 i++;
 
@@ -231,9 +264,7 @@ let win=Math.random()<1/450;
 
 if(win){
 add(1000);
-slotFail.innerText="";
 }else{
-slotFail.innerText="FAIL";
 sub(200);
 }
 
@@ -246,7 +277,7 @@ sub(200);
 
 function coin(t){
 let r=Math.random()<0.5?"HEAD":"TAIL";
-coinBox.innerText=r;
+document.getElementById("coinBox").innerText=r;
 if(r===t)add(200);
 }
 
@@ -255,25 +286,38 @@ if(r===t)add(200);
 function bet(){
 let v=+betInput.value;
 if(v>State.money)return;
-
 sub(v);
 setTimeout(()=>Math.random()<0.5?add(v*2):0,500);
 }
 
-/* ================= CODE ================= */
+/* ================= GOLD MINE ================= */
 
-function code(){
-go('code');
+let hold=false;
+let time=0;
+
+document.getElementById("gold").onmousedown=()=>{
+
+hold=true;
+time=0;
+
+let timer=setInterval(()=>{
+
+if(!hold){clearInterval(timer);return;}
+
+time++;
+
+if(time>=1000){
+clearInterval(timer);
+add(10);
+hold=false;
 }
 
-/* ================= SHOP ================= */
+},10);
 
-function buy(item){
-if(State.money<30000)return;
+};
 
-sub(30000);
-State.inv.push(item);
-}
+document.getElementById("gold").onmouseup=()=>hold=false;
+document.getElementById("gold").onmouseleave=()=>hold=false;
 
 /* ================= INIT ================= */
 
