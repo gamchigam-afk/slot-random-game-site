@@ -9,11 +9,19 @@
 
 body{
 margin:0;
-background:#000;
-color:#00ffff;
+background:radial-gradient(circle,#0b0700,#000);
+color:#ffd700;
 font-family:Arial;
 overflow:hidden;
 text-align:center;
+}
+
+/* ================= TITLE ================= */
+
+#title{
+font-size:60px;
+margin-top:60px;
+text-shadow:0 0 10px #ffd700,0 0 30px #ffcc00;
 }
 
 /* ================= MONEY ================= */
@@ -22,21 +30,30 @@ text-align:center;
 position:fixed;
 left:50%;
 transform:translateX(-50%);
-z-index:10;
+text-shadow:0 0 10px #ffd700;
 }
 
-#moneyUI{top:10px;font-size:22px;}
-#bestUI{top:40px;font-size:16px;color:gold;}
+#moneyUI{top:10px;}
+#bestUI{top:40px;color:gold;}
 
-/* ================= TITLE ================= */
+/* ================= LAYOUT ================= */
 
-#title{
-font-size:60px;
-margin-top:60px;
-text-shadow:0 0 20px #00ffff,0 0 40px #ff00ff;
+#layout{
+display:flex;
+height:100vh;
 }
 
-/* ================= SCREEN (FULL PAGE SYSTEM) ================= */
+/* LEFT PANEL */
+
+#left{
+width:200px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+gap:10px;
+}
+
+/* SCREEN SYSTEM (FULL PAGE) */
 
 .screen{
 display:none;
@@ -45,22 +62,22 @@ inset:0;
 flex-direction:column;
 align-items:center;
 justify-content:center;
-background:#000;
 }
 
 .active{display:flex;}
 
-/* ================= CARD ================= */
+/* CARD */
 
 .card{
 padding:10px;
 margin:6px;
-border:1px solid #00ffff;
+border:1px solid #ffd700;
 cursor:pointer;
-box-shadow:0 0 10px #00ffff;
+box-shadow:0 0 10px #ffcc00;
+background:rgba(0,0,0,0.4);
 }
 
-/* ================= GOLD ================= */
+/* GOLD */
 
 #gold{
 font-size:100px;
@@ -71,14 +88,19 @@ transition:0.1s;
 
 .shrink{transform:scale(0.7);}
 
-/* ================= SLOT ================= */
+/* SLOT */
 
 #slotBox{
 font-size:70px;
 margin:20px;
 }
 
-.small{font-size:14px;color:gray;}
+/* SMALL TEXT */
+
+.small{
+font-size:14px;
+color:#ffdd88;
+}
 
 </style>
 </head>
@@ -90,13 +112,35 @@ margin:20px;
 
 <div id="title">NEON CASINO X (BETA)</div>
 
-<!-- ================= MENU ================= -->
+<div id="layout">
+
+<!-- LEFT MENU -->
+<div id="left">
+
+<div class="card" onclick="go('inv')">INVENTORY</div>
+<div class="card" onclick="go('shop')">SHOP</div>
+<div class="card" onclick="code()">CODE INPUT</div>
+
+</div>
+
+</div>
+
+<!-- ================= MAIN MENU ================= -->
 <div id="menu" class="screen active">
+
+<div class="card" onclick="go('choose')">CHOOSE GAME MODE</div>
+
+</div>
+
+<!-- ================= CHOOSE GAME MODE ================= -->
+<div id="choose" class="screen">
 
 <div class="card" onclick="go('slot')">SLOT</div>
 <div class="card" onclick="go('coin')">COIN</div>
 <div class="card" onclick="go('bet')">BET</div>
 <div class="card" onclick="go('mine')">GOLD MINE</div>
+
+<div class="card" onclick="go('menu')">BACK</div>
 
 </div>
 
@@ -106,7 +150,7 @@ margin:20px;
 <div id="slotBox">❓❓❓</div>
 <div class="card" onclick="spin()">SPIN</div>
 <div class="small" id="slotFail"></div>
-<div class="card" onclick="go('menu')">BACK</div>
+<div class="card" onclick="go('choose')">BACK</div>
 
 </div>
 
@@ -116,7 +160,7 @@ margin:20px;
 <div id="coinBox">❓</div>
 <div class="card" onclick="coin('HEAD')">HEAD</div>
 <div class="card" onclick="coin('TAIL')">TAIL</div>
-<div class="card" onclick="go('menu')">BACK</div>
+<div class="card" onclick="go('choose')">BACK</div>
 
 </div>
 
@@ -125,20 +169,44 @@ margin:20px;
 
 <input id="betInput">
 <div class="card" onclick="bet()">START</div>
+<div class="card" onclick="go('choose')">BACK</div>
+
+</div>
+
+<!-- ================= SHOP ================= -->
+<div id="shop" class="screen">
+
+<div class="card">SHOP READY</div>
 <div class="card" onclick="go('menu')">BACK</div>
 
 </div>
 
-<!-- ================= GOLD MINE (FULL SCREEN GAME) ================= -->
+<!-- ================= INVENTORY ================= -->
+<div id="inv" class="screen">
+
+<div class="card">INVENTORY READY</div>
+<div class="card" onclick="go('menu')">BACK</div>
+
+</div>
+
+<!-- ================= CODE INPUT ================= -->
+<div id="code" class="screen">
+
+<div class="card">준비중..</div>
+<div class="card" onclick="go('menu')">BACK</div>
+
+</div>
+
+<!-- ================= GOLD MINE ================= -->
 <div id="mine" class="screen">
 
 <h2>⛏️ GOLD MINE</h2>
 
 <div id="gold">🪙</div>
 
-<div id="mineText">CLICK AND MINE</div>
+<div id="mineText">10 SECONDS HOLD</div>
 
-<div class="card" onclick="go('menu')">EXIT</div>
+<div class="card" onclick="go('choose')">EXIT</div>
 
 </div>
 
@@ -179,38 +247,27 @@ bestUI.innerText="🏆 "+State.best;
 
 /* ================= SLOT ================= */
 
-const sym=["🍒","🍋","🔔","⭐","7️⃣"];
-
 function spin(){
-
 sub(100);
-
 let box=slotBox;
 let i=0;
 
 let inter=setInterval(()=>{
 
-box.innerText=
-sym[Math.floor(Math.random()*5)]+" "
-+sym[Math.floor(Math.random()*5)]+" "
-+sym[Math.floor(Math.random()*5)];
+box.innerText=["🍒","🍋","⭐","7️⃣"][Math.floor(Math.random()*4)]
++" "+["🍒","🍋","⭐","7️⃣"][Math.floor(Math.random()*4)]
++" "+["🍒","🍋","⭐","7️⃣"][Math.floor(Math.random()*4)];
 
 i++;
 
 if(i>15){
 clearInterval(inter);
-
-let a=sym[Math.floor(Math.random()*5)];
-let b=sym[Math.floor(Math.random()*5)];
-let c=sym[Math.floor(Math.random()*5)];
-
-box.innerText=`${a} ${b} ${c}`;
+let a=Math.random(),b=Math.random(),c=Math.random();
 
 if(a===b&&b===c){
 add(1000);
 slotFail.innerText="";
-}
-else{
+}else{
 slotFail.innerText="FAIL";
 sub(200);
 }
@@ -218,7 +275,6 @@ sub(200);
 }
 
 },70);
-
 }
 
 /* ================= COIN ================= */
@@ -238,60 +294,59 @@ sub(v);
 setTimeout(()=>Math.random()<0.5?add(v*2):0,500);
 }
 
+/* ================= CODE ================= */
+
+function code(){
+go('code');
+}
+
 /* ================= GOLD MINE ================= */
 
 const gold=document.getElementById("gold");
 
-let mining=false;
-let mineTimer=null;
-let cooldown=false;
+let holding=false;
+let timer=null;
+let time=0;
 
 gold.onmousedown=()=>{
 
-if(cooldown) return;
+holding=true;
+time=0;
+mineText.innerText="MINING... HOLD 10s";
 
-mining=true;
-mineText.innerText="MINING...";
+timer=setInterval(()=>{
 
-let t=0;
-
-mineTimer=setInterval(()=>{
-
-if(!mining){
-clearInterval(mineTimer);
+if(!holding){
+clearInterval(timer);
+mineText.innerText="FAILED";
 return;
 }
 
+time++;
+
+if(time>=1000){
+clearInterval(timer);
 add(10);
-
-t++;
-
-if(t>=1000){
-stopMine();
+mineText.innerText="SUCCESS +10";
+holding=false;
 }
 
 },10);
 
 };
 
-function stopMine(){
-
-mining=false;
-clearInterval(mineTimer);
-
-mineText.innerText="COOLDOWN";
-
-cooldown=true;
-
-setTimeout(()=>{
-cooldown=false;
-mineText.innerText="READY";
-},5000);
-
-}
-
 gold.onmouseup=stopMine;
 gold.onmouseleave=stopMine;
+
+function stopMine(){
+
+if(!holding) return;
+
+holding=false;
+clearInterval(timer);
+mineText.innerText="FAILED";
+
+}
 
 </script>
 
