@@ -2,106 +2,61 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>NEON CASINO X FINAL</title>
+<title>Service Terminated</title>
 <style>
-body{background:#000;color:#fff;font-family:Arial;text-align:center}
-h1{color:#00ffff;text-shadow:0 0 15px #00ffff}
-button,input{padding:10px;margin:5px;background:#111;color:#fff;border:1px solid #00ffff}
-#hud{position:fixed;top:10px;right:10px}
-#copy{position:fixed;left:10px;top:10px}
-#shutdown{display:none;position:fixed;inset:0;background:#000;justify-content:center;align-items:center;flex-direction:column}
+    body {
+        margin: 0;
+        background: black;
+        color: white;
+        font-family: monospace;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+    }
+
+    .box {
+        animation: flicker 1.5s infinite;
+    }
+
+    h1 {
+        font-size: 40px;
+        margin-bottom: 10px;
+        letter-spacing: 2px;
+    }
+
+    p {
+        font-size: 18px;
+        opacity: 0.8;
+    }
+
+    @keyframes flicker {
+        0% { opacity: 1; }
+        50% { opacity: 0.6; }
+        100% { opacity: 1; }
+    }
+
+    .small {
+        margin-top: 20px;
+        font-size: 14px;
+        opacity: 0.5;
+    }
 </style>
 </head>
+
 <body>
 
-<div id="hud">
-<div id="money">💰10000</div>
-<div id="tier">NULL</div>
-<div id="timer"></div>
+<div class="box">
+    <h1>⚠ SERVICE TERMINATED ⚠</h1>
+    <p>SERVER CLOSED</p>
+    <p>ALL DATA HAS BEEN ERASED</p>
+
+    <div class="small">
+        connection lost...<br>
+        you can close this page
+    </div>
 </div>
 
-<button id="copy" onclick="money+=100000;update()">💸 돈복사 +10만</button>
-
-<h1>NEON CASINO X</h1>
-
-<div>
-<input id="code" placeholder="코드">
-<button onclick="redeem()">CODE</button>
-<p id="coderes"></p>
-</div>
-
-<h2>🎰 SLOT</h2>
-<div style="font-size:50px" id="slot">❓❓❓</div>
-<button onclick="spin()">SPIN</button>
-<p id="result"></p>
-
-<div id="shutdown">
-<h1>서비스 종료</h1>
-<p id="finalMoney"></p>
-<p id="finalTier"></p>
-<p>지금까지 NEON CASINO X를 사랑해주셔서 감사합니다.</p>
-</div>
-
-<script>
-let money=10000;
-let used=JSON.parse(localStorage.getItem("used")||"[]");
-let end=Date.now()+3600000;
-
-function tierName(){
-if(money>=9000000)return"RUBY";
-if(money>=7000000)return"DIAMOND";
-if(money>=5000000)return"OBSIDIAN";
-if(money>=3500000)return"EMERALD";
-if(money>=2500000)return"GOLD";
-if(money>=1500000)return"SILVER II";
-if(money>=1000000)return"SILVER I";
-if(money>=500000)return"BRONZE";
-return"NULL";
-}
-
-function update(){
-document.getElementById("money").innerText="💰"+money;
-document.getElementById("tier").innerText=tierName();
-localStorage.setItem("money",money);
-}
-
-function spin(){
-let s="💎💎💎";
-document.getElementById("slot").innerText=s;
-money+=10000;
-document.getElementById("result").innerText="🎉 JACKPOT +10000";
-update();
-}
-
-function redeem(){
-let c=document.getElementById("code").value.trim();
-if(used.includes(c)){coderes.innerText="이미 사용";return;}
-if(c==="colacola"){
-money+=1400000;
-used.push(c);
-localStorage.setItem("used",JSON.stringify(used));
-coderes.innerText="140만원 지급";
-update();
-}else{
-coderes.innerText="잘못된 코드";
-}
-}
-
-setInterval(()=>{
-let left=Math.max(0,end-Date.now());
-let s=Math.floor(left/1000);
-timer.innerText=s+"초 후에 서비스가 종료됩니다";
-if(left<=0){
-shutdown.style.display="flex";
-finalMoney.innerText="최종 돈 : "+money;
-finalTier.innerText="최종 티어 : "+tierName();
-document.body.innerHTML=shutdown.outerHTML;
-}
-},1000);
-
-money=Number(localStorage.getItem("money")||10000);
-update();
-</script>
 </body>
 </html>
